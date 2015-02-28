@@ -1,0 +1,130 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Week 6 Experiment</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script src="./js/angular.min.js"></script>
+
+    <script src="exp1.js"></script>
+    <style>
+        .fixed-col-350 {
+            width: 320px;
+        }
+    </style>
+</head>
+<body>
+<header class="container">
+    <h1>Experiment 1: Data send/retrieve using Node.js</h1>
+</header>
+<main ng-app="courseApp">
+    <div class="container" ng-controller="courseController">
+        <h2>Registered Courses of {{currentUser}}</h2>
+        <div class="row">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Course Number</th>
+                    <th>Course Name</th>
+                    <th>Campus</th>
+                    <th>Professor</th>
+                    <th>Time slot</th>
+                    <th>Classroom</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in registeredCourses">
+                    <td>{{c.number}}</td>
+                    <td class="fixed-col-350">{{c.name}}</td>
+                    <td>{{c.campus}}</td>
+                    <td>{{c.professor}}</td>
+                    <td>{{c.time}}</td>
+                    <td>{{c.classroom}}</td>
+                    <td><button ng-click="dropCourse(c.number)" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span></button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <h2>All Courses</h2>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="text" class="form-control" ng-model="searchFilter" placeholder="Search...">
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Course Number</th>
+                    <th>Course Name</th>
+                    <th>Campus</th>
+                    <th>Professor</th>
+                    <th>Time slot</th>
+                    <th>Classroom</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in allCourses | filter: myFilter">
+                    <td>{{c.number}}</td>
+                    <td class="fixed-col-350">{{c.name}}</td>
+                    <td>{{c.campus}}</td>
+                    <td>{{c.professor}}</td>
+                    <td>{{c.time}}</td>
+                    <td>{{c.classroom}}</td>
+                    <td><button ng-click="registerCourse(c.number)" type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <br/>
+        <div>
+            <h2>Documentation</h2>
+
+            <p>In this experiment, I used node.js to implement a simple restful server serving course registration</p>
+            <p>To run the code, you may need to run the server <code>node exp1Server.js</code>, and then access
+            <code>localhost:3000</code> from your browser.</p>
+            <p>In the server side, I used <code>express</code> plugin to setup the server quickly. It'll listen on
+            several different paths configured by <code>get, post, delete</code>. In the client side, the jQuery
+            <code>get, post</code> and <code>ajax(delete)</code> are used to issue the request.</p>
+            <h2>Code Snippet</h2>
+
+            <p>Following code shows how to listen on a path for method <code>get</code></p>
+
+            <pre>
+               app.get('/registeredCourses', function (req, res) {
+                    res.json(getRegisteredCourse())
+                })
+            </pre>
+            <p>Following code is to send a get request from client js code. Notice here we use <code>$scope.$apply()</code>
+            to force screen get updated.</p>
+
+
+            <pre>
+                    $.get('/registeredCourses').success(function(resp, status){
+                        $scope.$apply(function() {
+                            $scope.registeredCourses = resp
+                        })
+                    })
+            </pre>
+
+            <h2>Reference</h2>
+            <a href="https://docs.angularjs.org/api" target="_blank">Angular JS API</a>,
+            <a href="http://nodejs.org/api/" target="_blank">Node JS</a>
+            <h2>Source code</h2>
+            <p>Please see github for the source code</p>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
