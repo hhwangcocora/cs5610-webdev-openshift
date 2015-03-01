@@ -6,13 +6,13 @@ app.controller('courseController', function ($scope){
     $scope.currentUser = 'bob'
 
     // initialize the data
-    $.get('/allCourses').success(function(resp, status){
+    $.get('/week6exp1/allCourses').success(function(resp, status){
         $scope.$apply(function(){
             $scope.allCourses = resp
         })
     })
 
-    $.get('/registeredCourses').success(function(resp, status){
+    $.get('/week6exp1/registeredCourses').success(function(resp, status){
         $scope.$apply(function() {
             $scope.registeredCourses = resp
         })
@@ -27,7 +27,7 @@ app.controller('courseController', function ($scope){
     $scope.registerCourse = function(courseNumber) {
         for (var idx in $scope.allCourses) {
             if ($scope.allCourses[idx].number === courseNumber) {
-                $.post('/' + idx).success(function(resp, status){
+                $.post('/week6exp1/' + idx).success(function(resp, status){
                     $scope.$apply(function() {
                         $scope.registeredCourses = resp
                     })
@@ -41,7 +41,7 @@ app.controller('courseController', function ($scope){
         for (var idx in $scope.allCourses) {
             if ($scope.allCourses[idx].number === courseNumber) {
                 $.ajax({
-                    url: '/' + idx,
+                    url: '/week6exp1/' + idx,
                     type: 'DELETE',
                     success: function(resp) {
                         $scope.$apply(function() {

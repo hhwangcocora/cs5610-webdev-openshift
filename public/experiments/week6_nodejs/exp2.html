@@ -1,0 +1,180 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Week 6 Experiment</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script src="../../js/angular.min.js"></script>
+
+    <script src="../../experiments/week6_nodejs/exp2.js"></script>
+    <style>
+        .fixed-col-350 {
+            width: 320px;
+        }
+    </style>
+</head>
+<body>
+<header class="container">
+    <h1>Experiment 2: User login using Node.js</h1>
+</header>
+<main ng-app="courseApp">
+    <div class="container" ng-controller="courseController">
+
+        <div class="row" ng-show="currentUser">
+            <h2>Registered Courses of {{currentUser}}</h2>
+            <button class="btn btn-danger" type="button" ng-click="logout()">Logout</button>
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Course Number</th>
+                    <th>Course Name</th>
+                    <th>Campus</th>
+                    <th>Professor</th>
+                    <th>Time slot</th>
+                    <th>Classroom</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in registeredCourses">
+                    <td>{{c.number}}</td>
+                    <td class="fixed-col-350">{{c.name}}</td>
+                    <td>{{c.campus}}</td>
+                    <td>{{c.professor}}</td>
+                    <td>{{c.time}}</td>
+                    <td>{{c.classroom}}</td>
+                    <td><button ng-click="dropCourse(c.number)" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span></button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Login -->
+        <div ng-show="!currentUser">
+            <h2>Login to view your registered list <small>(Try bob:123456 or charlie:123456)</small></h2>
+            <form class="form-horizontal" name="myForm">
+                <div class="form-group">
+                    <label for="username" class="col-sm-1 control-label">Username: </label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" id="username" name="username" ng-model="login.username" placeholder="User name" required>
+                    </div>
+                    <div class="text-danger" ng-show="myForm.username.$error.required">
+                        Required
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-1 control-label">Password: </label>
+                    <div class="col-sm-2">
+                        <input ng-model="login.password" name="password" type="password" class="form-control" id="password" placeholder="Password" required  minlength="6" maxlength="10">
+                    </div>
+                    <div class="text-danger" ng-show="myForm.password.$error.required">
+                        Required
+                    </div>
+                    <div class="text-danger" ng-show="myForm.password.$error.minlength">
+                        Too short. At least 6 characters
+                    </div>
+                    <div class="text-danger" ng-show="myForm.password.$error.maxlength">
+                        Too Long. At most 8 characters
+                    </div>
+                </div>
+                <button class="btn btn-primary col-sm-offset-2" ng-disabled="!myForm.$valid" type="button" ng-click="loginf()">Login</button>
+            </form>
+        </div>
+
+
+        <h2>All Courses</h2>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="text" class="form-control" ng-model="searchFilter" placeholder="Search...">
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Course Number</th>
+                    <th>Course Name</th>
+                    <th>Campus</th>
+                    <th>Professor</th>
+                    <th>Time slot</th>
+                    <th>Classroom</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in allCourses | filter: myFilter">
+                    <td>{{c.number}}</td>
+                    <td class="fixed-col-350">{{c.name}}</td>
+                    <td>{{c.campus}}</td>
+                    <td>{{c.professor}}</td>
+                    <td>{{c.time}}</td>
+                    <td>{{c.classroom}}</td>
+                    <td><button ng-click="registerCourse(c.number)" type="button" class="btn btn-success" ng-disabled="!currentUser">
+                        <span class="glyphicon glyphicon-plus"></span></button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <br/>
+        <div>
+            <h2>Documentation</h2>
+
+            <p>In this experiment, I added the login functionality to the coure page.</p>
+            <p>There are two predefined accounts in this experiment, bob and charlie. User can login using one of them,
+                change the registered courses, logout and login again. The data is saved in server memory.</p>
+            <p>The login request is implemented using <code>put</code> and query paramters. I also tried
+            <code>$scope.$watch</code> in this experiment. </p>
+            <h2>Code Snippet</h2>
+
+            <p>Following code shows server side's login endpoint. A sample request url is like
+                <code>/week6exp2/login?username=bob&password=123456</code>, and <code>req.query</code> has the query
+            parameter <code>username</code> and <code>password</code>.</p>
+
+            <pre>
+                app.put(rootpath + '/login', function(req, res){
+                    console.log(req.query)
+                    var username = req.query.username
+                    var password = req.query.password
+
+                    if (username in users && users[username] == password) {
+                        res.json({
+                            username: username
+                        })
+                    } else {
+                        res.json({
+                            username: ''
+                        })
+                    }
+                })
+            </pre>
+            <p>Following code in client side monitors <code>currentUser</code> value change. Once it's changed, it'll do
+            corresponding reactions. </p>
+
+            <pre>
+                $scope.$watch('currentUser', function() {
+                    if ($scope.currentUser) {
+                        $http.get(rootpath + '/' + $scope.currentUser +'/registeredCourses').success(function(resp, status){
+                            $scope.registeredCourses = resp
+                        })
+                    }
+                })
+            </pre>
+
+            <h2>Reference</h2>
+            <a href="https://docs.angularjs.org/api" target="_blank">Angular JS API</a>,
+            <a href="http://nodejs.org/api/" target="_blank">Node JS</a>
+            <h2>Source code</h2>
+            <p>Please see github for the source code</p>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
