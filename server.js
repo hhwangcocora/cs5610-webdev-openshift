@@ -26,8 +26,9 @@ var week6exp2 = require('./experiments/week6_nodejs/exp2server.js')
 week6exp1.load(app, public_path)
 week6exp2.load(app, public_path)
 
+
 app.get('/', function(req, res) {
-    res.sendfile(__dirname + '/index.html')
+    res.sendfile(public_path + 'index.html')
 })
 
 var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
