@@ -1,0 +1,255 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Week 6 Experiment</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script src="../../js/angular.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <script src="../../experiments/week6_nodejs/exp3.js"></script>
+    <style>
+        .fixed-col-350 {
+            width: 320px;
+        }
+    </style>
+</head>
+<body>
+<header class="container">
+    <h1>Experiment 3: New user register using Node.js</h1>
+</header>
+<main ng-app="courseApp">
+    <div class="container" ng-controller="courseController">
+
+        <div class="row" ng-show="currentUser">
+            <h2>Registered Courses of {{currentUser}}</h2>
+            <button class="btn btn-danger" type="button" ng-click="logout()">Logout</button>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Course Number</th>
+                    <th>Course Name</th>
+                    <th>Campus</th>
+                    <th>Professor</th>
+                    <th>Time slot</th>
+                    <th>Classroom</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in registeredCourses">
+                    <td>{{c.number}}</td>
+                    <td class="fixed-col-350">{{c.name}}</td>
+                    <td>{{c.campus}}</td>
+                    <td>{{c.professor}}</td>
+                    <td>{{c.time}}</td>
+                    <td>{{c.classroom}}</td>
+                    <td><button ng-click="dropCourse(c.number)" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span></button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Login -->
+        <div ng-show="!currentUser">
+            <h2>Register as a new user</h2>
+            <button class="btn btn-success" type="button" data-toggle="modal" data-target="#registerModal">Register</button>
+            <h2>Login to view your registered list <small>(Try bob:123456 or charlie:123456)</small></h2>
+            <form class="form-horizontal" name="myForm">
+                <div class="form-group">
+                    <label for="username" class="col-sm-1 control-label">Username: </label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" id="username" name="username" ng-model="login.username" placeholder="User name" required>
+                    </div>
+                    <div class="text-danger" ng-show="myForm.username.$error.required">
+                        Required
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-1 control-label">Password: </label>
+                    <div class="col-sm-2">
+                        <input ng-model="login.password" name="password" type="password" class="form-control" id="password" placeholder="Password" required  minlength="6" maxlength="10">
+                    </div>
+                    <div class="text-danger" ng-show="myForm.password.$error.required">
+                        Required
+                    </div>
+                    <div class="text-danger" ng-show="myForm.password.$error.minlength">
+                        Too short. At least 6 characters
+                    </div>
+                    <div class="text-danger" ng-show="myForm.password.$error.maxlength">
+                        Too Long. At most 8 characters
+                    </div>
+                </div>
+                <button class="btn btn-primary col-sm-offset-2" ng-disabled="!myForm.$valid" type="button" ng-click="loginf()">Login</button>
+            </form>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Register as a new user</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{registerError}}</p>
+                        <form class="form-horizontal" name="registerForm" ng-show="inRegister">
+
+                            <div class="form-group">
+                                <label for="rusername" class="col-sm-2 control-label">Username: </label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control" id="rusername" name="rusername" ng-model="register.username" placeholder="User name" required>
+                                </div>
+                                <div class="text-danger" ng-show="registerForm.rusername.$error.required">
+                                    Required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password1" class="col-sm-2 control-label">Password: </label>
+                                <div class="col-sm-4">
+                                    <input ng-model="register.password1" name="password1" type="password" class="form-control" id="password1" placeholder="Password" required  minlength="6" maxlength="10">
+                                </div>
+                                <div class="text-danger" ng-show="registerForm.password1.$error.required">
+                                    Required
+                                </div>
+                                <div class="text-danger" ng-show="registerForm.password1.$error.minlength">
+                                    Too short. At least 6 characters
+                                </div>
+                                <div class="text-danger" ng-show="registerForm.password1.$error.maxlength">
+                                    Too Long. At most 8 characters
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password2" class="col-sm-2 control-label">Re-enter Password: </label>
+                                <div class="col-sm-4">
+                                    <input ng-model="register.password2" name="password2" type="password" class="form-control" id="password2" placeholder="Password" required>
+                                </div>
+                                <div class="text-danger" ng-show="myregisterFormForm.password2.$error.required">
+                                    Required
+                                </div>
+                                <div class="text-danger" ng-hide="matchPassword()">
+                                    Password not match
+                                </div>
+                            </div>
+                            <button class="btn btn-primary col-sm-offset-2" ng-disabled="!registerForm.$valid || !matchPassword()" type="button" ng-click="registerf()">Register</button>
+                        </form>
+                        <p ng-show="!inRegister">
+                            Register successful!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <h2>All Courses</h2>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="text" class="form-control" ng-model="searchFilter" placeholder="Search...">
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Course Number</th>
+                    <th>Course Name</th>
+                    <th>Campus</th>
+                    <th>Professor</th>
+                    <th>Time slot</th>
+                    <th>Classroom</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in allCourses | filter: myFilter">
+                    <td>{{c.number}}</td>
+                    <td class="fixed-col-350">{{c.name}}</td>
+                    <td>{{c.campus}}</td>
+                    <td>{{c.professor}}</td>
+                    <td>{{c.time}}</td>
+                    <td>{{c.classroom}}</td>
+                    <td><button ng-click="registerCourse(c.number)" type="button" class="btn btn-success" ng-disabled="!currentUser">
+                        <span class="glyphicon glyphicon-plus"></span></button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <br/>
+        <div>
+            <h2>Documentation</h2>
+
+            <p>In this experiment, I added the register functionality to the coure page.</p>
+            <p>Now user can click the <code>register</code> button to register as a new user. If the user name already
+            exists, the modal will display an error message. Otherwise, the new account is added to server side's memory,
+            and user can login as that account.</p>
+            <p>The register page is implemented as a modal, with a lot of validation messages to guide user on how to
+            input correct information. The server side's register endpoint uses <code>put</code> method and query params.</p>
+            <h2>Code Snippet</h2>
+
+            <p>Following code shows the register logic in server side. It is quite similar to the login endpoint.</p>
+
+            <pre>
+                app.put(rootpath + '/register', function(req, res) {
+                    var username = req.query.username
+                    var password = req.query.password
+                    console.log(req.query)
+                    if (username in users) {
+                        res.json({
+                            username: ''
+                        })
+                    } else {
+                        users[username] = password
+                        registeredCourses[username] = []
+                        res.json({
+                            username: username
+                        })
+                    }
+                })
+            </pre>
+            <p>Following code in client side sends the http request to server, and on success checks if the response
+            contains the new account name (means success) or is empty (means the username already exists). On succesful
+            register, it'll notify user by setting <code>$scope.inRegister=false</code> which controls the success
+            message on the modal. It'll also nide the modal in 2 seconds by calling <code>setTimeout()</code> function.</p>
+
+            <pre>
+                    $scope.registerf = function() {
+                        $http.put(rootpath + '/register?username=' + $scope.register.username + '&password=' + $scope.register.password1).success(function(resp, status){
+                            if (resp.username) {
+                                $scope.inRegister = false
+                                $scope.registerError = ''
+                                setTimeout(function () {
+                                    $scope.$apply(function() {
+                                        $('#registerModal').modal('hide')
+                                        $scope.register = {}
+                                        $scope.inRegister = true
+                                    })
+                                }, 2000);
+                            } else {
+                                $scope.registerError = 'Register failed. Username exists, try another username.'
+                            }
+                        })
+                    }
+            </pre>
+
+            <h2>Reference</h2>
+            <a href="https://docs.angularjs.org/api" target="_blank">Angular JS API</a>,
+            <a href="http://nodejs.org/api/" target="_blank">Node JS</a>
+            <h2>Source code</h2>
+            <p>Please see github for the source code</p>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
