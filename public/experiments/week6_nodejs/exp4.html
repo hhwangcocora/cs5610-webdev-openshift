@@ -1,0 +1,89 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Week 6 Experiment</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-theme.min.css">
+
+    <script src="../js/angular.min.js"></script>
+
+    <script src="../../experiments/week6_nodejs/exp4.js"></script>
+</head>
+<body>
+<header class="container">
+    <h1>Experiment 4: todo list using Node.js</h1>
+</header>
+<main ng-app="todoApp">
+    <div class="container" ng-controller="todoController">
+        <h2>TODOs:</h2>
+        <div class="row">
+            <div class="col-sm-4">
+                <form class="form-inline">
+                    <input type="text" id="newItem" class="form-control" ng-model="newTodo">
+                    <button type="button" id="addNewItem" class="btn btn-primary" ng-click="addItem()">Add Todo</button>
+                </form>
+            </div>
+        </div>
+        <div id="list" ng-show="todoItems">
+            <div class="row" ng-repeat="item in todoItems track by $index">
+                <div class="col-sm-5" >
+                    <input type="checkbox" ng-model="item.check" ng-click="toggleItem(item.description)">
+                    <span>{{item.description}}</span>
+                    <span class="glyphicon glyphicon-remove" ng-click="removeItem(item.description)"></span>
+                </div>
+            </div>
+        </div>
+
+        <br/>
+        <div>
+            <h2>Documentation</h2>
+
+            <p>In this experiment, I converted my previous to-do list management using Node.js so that the data
+            can be saved in server side.</p>
+            <p>The new technology I practised in this experiment is to send json body from client to server and
+            parse it in server side. This is implemented by pass data parameter when make $http calls. The server
+            can then use body-parser to parse the request's body.</p>
+            <p>I noticed that the <code>$http.delete</code> won't send body. So I have to use <code>$http.put</code>
+            instead.</p>
+            <h2>Code Snippet</h2>
+
+            <p>Following is the client side code to pass a request with json body.</p>
+
+            <pre>
+                    $scope.removeItem = function(desp) {
+                        $http.put(rootpath + '/delete', {description: desp}).success(function(resp, status){
+                            $scope.todoItems = resp
+                        })
+                    }
+            </pre>
+            <p>Following is the corresponding server side code which will parse the body and get the description.</p>
+
+            <pre>
+                app.put(rootpath + '/delete', function(req, res) {
+                    var descrip = req.body.description
+                    for(var idx in todoItems) {
+                        if (todoItems[idx].description === descrip) {
+                            todoItems.splice(idx, 1)
+                            break
+                        }
+                    }
+                    res.json(todoItems)
+                })
+            </pre>
+
+            <h2>Reference</h2>
+            <a href="https://docs.angularjs.org/api" target="_blank">Angular JS API</a>,
+            <a href="http://nodejs.org/api/" target="_blank">Node JS</a>
+            <h2>Source code</h2>
+            <p>Please see github for the source code</p>
+        </div>
+
+    </div>
+
+
+</main>
+
+</body>
+</html>

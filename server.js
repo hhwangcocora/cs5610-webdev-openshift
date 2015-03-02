@@ -23,10 +23,12 @@ app.use(express.static(public_path))
 var week6exp1 = require('./experiments/week6_nodejs/exp1server.js')
 var week6exp2 = require('./experiments/week6_nodejs/exp2server.js')
 var week6exp3 = require('./experiments/week6_nodejs/exp3server.js')
+var week6exp4 = require('./experiments/week6_nodejs/exp4server.js')
 
 week6exp1.load(app, public_path)
 week6exp2.load(app, public_path)
 week6exp3.load(app, public_path)
+week6exp4.load(app, public_path)
 
 
 app.get('/', function(req, res) {
