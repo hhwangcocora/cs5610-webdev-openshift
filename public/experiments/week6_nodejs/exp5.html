@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Week 5 Experiment</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-theme.min.css">
+
+    <script src="../js/angular.min.js"></script>
+
+    <script src="../../experiments/week6_nodejs/exp5.js"></script>
+</head>
+<body ng-app="timerApp">
+<div class="container" ng-controller="timerController as tc">
+
+    <h1>Experiment 5: Time management using Node.js </h1>
+    <h2><small>Record your task duration using following timer.</small></h2>
+    <div class="row">
+        <div class="col-sm-5">
+            <form class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="For example: read paper" ng-model="tc.taskName">
+                </div>
+                <button class="btn btn-primary" ng-click="tc.startTask()" type="button" ng-hide="tc.inprogress">Start Task</button>
+                <!--<button class="btn btn-primary" ng-click="tc.pauseTask()" type="button">Pause</button>-->
+                <button class="btn btn-danger" ng-click="tc.stopTask()" type="button" ng-show="tc.inprogress">Stop Task</button>
+            </form>
+        </div>
+    </div>
+    <div class="row" ng-show="tc.inprogress">
+        <h3> {{tc.hours}} hours {{tc.minutes}} minutes {{tc.seconds}} seconds</h3>
+    </div>
+    <h2><small>Tasks Log</small></h2>
+    <div class="row">
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>Start Time</th>
+                <th>Stop Time</th>
+                <th>Duration</th>
+                <th>Task</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="task in tc.tasks">
+                <td>{{task.startTime}}</td>
+                <td>{{task.stopTime}}</td>
+                <td>{{task.duration}}</td>
+                <td>{{task.taskName}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+<footer class="container">
+    <h2>Documentation</h2>
+    <p>In this experiment, I converted my previous time management page to be Node.js based such that the data can
+    be persistent in server side.</p>
+    <p>The experiment is fairly simple. However, there is one thing worth mentioning: in angular js, at any time
+    there is only one <code>$http.$apply</code> function allowed. Since in this experiment, that function has already
+    been called every second by <code>setInterval()</code>, it's hard to use it again in other place. </p>
+
+
+    <h2>Code Snippet</h2>
+    <p>Following code sends a new completed task to server side upon user clicking stop button.</p>
+    <pre>
+            $http.put('/week6exp5/addTask', newTask).success( function(resp, status){
+                controller.tasks = resp
+            })
+    </pre>
+    <p>Following code saves the new task in server side, and respond the updated task list. A better approach
+    would be just send back a success signal, instead of transferring the whole list over network.</p>
+    <pre>
+            app.put(rootpath + '/addTask', function(req, res) {
+                tasks.push(req.body)
+                res.json(tasks)
+            })
+    </pre>
+
+    <h2>Reference</h2>
+    <a href="https://docs.angularjs.org/api" target="_blank">Angular JS API</a>,
+    <a href="http://nodejs.org/api/" target="_blank">Node JS</a>
+    <h2>Source code</h2>
+    <p>Please see github for the source code</p>
+</footer>
+</body>
+</html>
