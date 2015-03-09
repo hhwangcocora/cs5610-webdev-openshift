@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>CS5610 Web Project - Pomodoro Time Management</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/pomodoro.css">
+
+</head>
+<body ng-app="timerApp">
+
+<nav class="navbar navbar-default navbar-fixed-top" ng-controller="navController as navCtrl">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">P<span>o</span>m<span>o</span>d<span>o</span>r<span>o</span></a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <div ng-show="currentUser">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#/timer">Task Timer</a></li>
+                    <li><a href="#/dashboard">Dashboard</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <span class="glyphicon glyphicon-user"></span>&nbsp;{{currentUser}}</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Friends</a></li>
+                            <li><a href="#">Messages</a></li>
+                            <li><a href="#">Profile</a></li>
+                            <li><a href="#">Change password</a></li>
+                            <li><a href="#">Logout</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Help center</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div ng-hide="currentUser">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <form class="form form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control input-sm" placeholder="Username" ng-model="navCtrl.login.username">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control input-sm" placeholder="Password" ng-model="navCtrl.login.password">
+                            </div>
+                            <button class="btn btn-default btn-sm" ng-click="navCtrl.login()" type="button">Login</button>
+                            &nbsp;
+                            <button class="btn btn-primary btn-sm" ng-click="navCtrl.register()" type="button">Register</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div ng-view></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="../js/angular.min.js"></script>
+<script src="../js/angular-route.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+
+<script src="js/pomodoro.js"></script>
+<script src="js/home.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/timer.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+body {
+
+    padding-top: 70px;
+}
+
+.navbar-brand span {
+    color: red;
+}
+
+.navbar-nav li form {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
