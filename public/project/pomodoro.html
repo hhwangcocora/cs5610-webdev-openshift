@@ -26,6 +26,7 @@
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
+            <!-- user already logged in-->
             <div ng-show="currentUser">
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#/timer">Task Timer</a></li>
@@ -47,18 +48,19 @@
                     </li>
                 </ul>
             </div>
+            <!--for login-->
             <div ng-hide="currentUser">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <form class="form form-inline">
                             <div class="form-group">
-                                <input type="text" class="form-control input-sm" placeholder="Username" ng-model="navCtrl.login.username">
+                                <input type="text" class="form-control input-sm" placeholder="Username" ng-model="navCtrl.account.username">
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control input-sm" placeholder="Password" ng-model="navCtrl.login.password">
+                                <input type="password" class="form-control input-sm" placeholder="Password" ng-model="navCtrl.account.password">
                             </div>
                             <button class="btn btn-default btn-sm" ng-click="navCtrl.login()" type="button">Login</button>
-                            &nbsp;
+                            <span>|</span>
                             <button class="btn btn-primary btn-sm" ng-click="navCtrl.register()" type="button">Register</button>
                         </form>
                     </li>
@@ -80,5 +82,8 @@
 <script src="js/home.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/timer.js"></script>
+
+<script src="js/httpService.js"></script>
+
 </body>
 </html>

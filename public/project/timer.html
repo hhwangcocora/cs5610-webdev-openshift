@@ -1,10 +1,72 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<div class="container" ng-controller="timerController as timerCtrl">
 
-</body>
-</html>
+    <!-- Level 1 category -->
+    <div class="row">
+        <div class="content-padding-10px">
+            <div class="col-sm-10, task-tag-list">
+                <ul>
+                    <li  ng-repeat="tag in timerCtrl.tags">
+                        <a href="#" ng-click="timerCtrl.chooseL1Tag(tag)"
+                           ng-class="timerCtrl.isTagActivated(tag.tagName) ? 'task-tag-activated' : 'task-tag-unactivated'">
+                            {{tag.tagName}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level 2 category -->
+    <div class="row">
+
+    </div>
+
+    <!-- Recorder/Timer-->
+    <div class="row">
+
+    </div>
+
+    <!-- Recent finished tasks -->
+    <div class="row">
+
+    </div>
+
+
+    <h2><small>Record your task duration using following timer.</small></h2>
+    <div class="row">
+        <div class="col-sm-5">
+            <form class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="For example: read paper" ng-model="tc.taskName">
+                </div>
+                <button class="btn btn-primary" ng-click="tc.startTask()" type="button" ng-hide="tc.inprogress">Start Task</button>
+                <!--<button class="btn btn-primary" ng-click="tc.pauseTask()" type="button">Pause</button>-->
+                <button class="btn btn-danger" ng-click="tc.stopTask()" type="button" ng-show="tc.inprogress">Stop Task</button>
+            </form>
+        </div>
+    </div>
+    <div class="row" ng-show="tc.inprogress">
+        <h3> {{tc.hours}} hours {{tc.minutes}} minutes {{tc.seconds}} seconds</h3>
+    </div>
+    <h2><small>Tasks Log</small></h2>
+    <div class="row">
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>Start Time</th>
+                <th>Stop Time</th>
+                <th>Duration</th>
+                <th>Task</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="task in tc.tasks">
+                <td>{{task.startTime}}</td>
+                <td>{{task.stopTime}}</td>
+                <td>{{task.duration}}</td>
+                <td>{{task.taskName}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

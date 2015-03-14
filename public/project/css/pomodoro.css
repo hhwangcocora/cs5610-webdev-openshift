@@ -3,6 +3,8 @@ body {
     padding-top: 70px;
 }
 
+/* Navigation */
+
 .navbar-brand span {
     color: red;
 }
@@ -11,3 +13,48 @@ body {
     padding-top: 15px;
     padding-bottom: 15px;
 }
+
+/* Common */
+
+.content-padding-10px {
+    padding: 10px;
+}
+.activated-background {
+    background-color: #d5d5d5;
+}
+
+.task-tag-list {
+    display: inline-block;
+    list-style: disc;
+}
+.task-tag-list ul {
+    display: block;
+}
+
+.task-tag-list ul li {
+    display: inline-block;
+    margin: 0 6px 0 0;
+    text-align: match-parent;
+    color: #ffffff;
+}
+
+.task-tag-list ul li a {
+    text-decoration: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.task-tag-list ul li a:hover {
+    background-color: tomato;
+}
+
+
+.task-tag-unactivated {
+    background-color: #bbbbbb;
+}
+
+.task-tag-activated {
+    background-color: tomato;
+}
+

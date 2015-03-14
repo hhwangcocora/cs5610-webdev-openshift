@@ -1,8 +1,29 @@
 
 var app = angular.module('timerApp', ['ngRoute'])
 
-app.controller('navController', function ($scope){
-    $scope.currentUser = 'Lily'
+app.controller('navController', function ($scope, $location, httpService){
+    $scope.currentUser = 'lily'
+    $scope.$watch('currentUser', function(){
+        if ($scope.currentUser) {
+            $location.path('/project/timer')
+        } else {
+            $location.path('/project/home')
+        }
+    })
+
+    this.login = function() {
+        var account = this.account;
+        httpService.login(account.username, account.password).then(
+            function(resp) {
+                // success
+                console.log('Login succeeded with resp: ' + resp);
+                $scope.currentUser = resp.username;
+            }, function(resp) {
+                // fail
+                console.log('Login failed with resp: ' + resp);
+            }
+        );
+    }
 
 
 
@@ -10,23 +31,24 @@ app.controller('navController', function ($scope){
 
 app.config(['$routeProvider',
         function($routeProvider){
+            var rootPath = '/project'
             $routeProvider.
-                when('/home', {
+                when(rootPath + '/home', {
                     templateUrl: 'home.html',
                     controller: 'homeController',
                     controllerAs: 'homeCtrl'
                 }).
-                when('/timer', {
-                    templateUrl: '../timer.html',
+                when(rootPath + '/timer', {
+                    templateUrl: 'timer.html',
                     controller: 'timerController',
                     controllerAs: 'timerCtrl'
                 }).
-                when('/dashboard', {
-                    templateUrl: '../dashboard.html',
+                when(rootPath + '/dashboard', {
+                    templateUrl: 'dashboard.html',
                     controller: 'dashboardController',
                     controllerAs: 'dashboardCtrl'
                 }).
-                otherwise('/home')
+                otherwise(rootPath + '/home')
         }]
 )
 

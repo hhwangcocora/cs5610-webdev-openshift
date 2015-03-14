@@ -25,7 +25,7 @@ var week6exp2 = require('./experiments/week6_nodejs/exp2server.js')
 var week6exp3 = require('./experiments/week6_nodejs/exp3server.js')
 var week6exp4 = require('./experiments/week6_nodejs/exp4server.js')
 var week6exp5 = require('./experiments/week6_nodejs/exp5server.js')
-var project = require('./project/server_pomodora.js')
+var project = require('./project/serverPomodoro.js')
 
 week6exp1.load(app, public_path)
 week6exp2.load(app, public_path)
