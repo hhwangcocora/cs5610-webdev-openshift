@@ -14,6 +14,23 @@ body {
     padding-bottom: 15px;
 }
 
+/* Timer */
+.timer {
+    font-size: 4em;
+    text-align: center;
+}
+.timer-unactivated {
+    color: #bbbbbb;
+}
+
+.timer-activated {
+    color: tomato;
+}
+
+.btn-unactivated {
+    background-color: gray;
+}
+
 /* Common */
 
 .content-padding-10px {

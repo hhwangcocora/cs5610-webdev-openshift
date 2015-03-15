@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="css/pomodoro.css">
 
 </head>
-<body ng-app="timerApp">
+<body ng-app="timerApp" ng-controller="navController as navCtrl">
 
-<nav class="navbar navbar-default navbar-fixed-top" ng-controller="navController as navCtrl">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
@@ -41,7 +41,7 @@
                             <li><a href="#">Messages</a></li>
                             <li><a href="#">Profile</a></li>
                             <li><a href="#">Change password</a></li>
-                            <li><a href="#">Logout</a></li>
+                            <li><a ng-click="navCtrl.logout()">Logout</a></li>
                             <li class="divider"></li>
                             <li><a href="#">Help center</a></li>
                         </ul>
@@ -61,7 +61,7 @@
                             </div>
                             <button class="btn btn-default btn-sm" ng-click="navCtrl.login()" type="button">Login</button>
                             <span>|</span>
-                            <button class="btn btn-primary btn-sm" ng-click="navCtrl.register()" type="button">Register</button>
+                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerModal" type="button">Register</button>
                         </form>
                     </li>
                 </ul>
@@ -71,6 +71,66 @@
 </nav>
 
 <div ng-view></div>
+
+
+<!-- Modal Register -->
+
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Register</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{navCtrl.registerError}}</p>
+                <form class="form-horizontal" name="registerForm" ng-show="navCtrl.inRegister">
+                    <div class="form-group">
+                        <label for="rusername" class="col-sm-2 control-label">Username: </label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="rusername" name="rusername" ng-model="navCtrl.newUser.username" placeholder="User name" required>
+                        </div>
+                        <div class="text-danger" ng-show="registerForm.rusername.$error.required">
+                            Required
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password1" class="col-sm-2 control-label">Password: </label>
+                        <div class="col-sm-4">
+                            <input ng-model="navCtrl.newUser.password1" name="password1" type="password" class="form-control" id="password1" placeholder="Password" required  minlength="6" maxlength="10">
+                        </div>
+                        <div class="text-danger" ng-show="registerForm.password1.$error.required">
+                            Required
+                        </div>
+                        <div class="text-danger" ng-show="registerForm.password1.$error.minlength">
+                            Too short. At least 6 characters
+                        </div>
+                        <div class="text-danger" ng-show="registerForm.password1.$error.maxlength">
+                            Too Long. At most 8 characters
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password2" class="col-sm-2 control-label">Re-enter Password: </label>
+                        <div class="col-sm-4">
+                            <input ng-model="navCtrl.newUser.password2" name="password2" type="password" class="form-control" id="password2" placeholder="Password" required>
+                        </div>
+                        <div class="text-danger" ng-show="myregisterFormForm.password2.$error.required">
+                            Required
+                        </div>
+                        <div class="text-danger" ng-hide="navCtrl.matchPassword()">
+                            Password not match
+                        </div>
+                    </div>
+                    <button class="btn btn-primary col-sm-offset-2" ng-disabled="!registerForm.$valid || !navCtrl.matchPassword()" type="button" ng-click="navCtrl.register()">Register</button>
+                </form>
+                <p ng-show="!navCtrl.inRegister">
+                    Register successful!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>

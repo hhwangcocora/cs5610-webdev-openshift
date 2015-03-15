@@ -2,16 +2,21 @@
  * Created by hhwang on 3/8/15.
  */
 
-app.controller('timerController', function($scope, $http) {
+app.controller('timerController', function($scope) {
     var controller = this
+
+    this.currentStatus = 'init' //init, ready, inProgress, pause
+
+    /* TAG */
+
     this.tags = [
         { tagName: 'web', subTags: ['experiment', 'project', 'course']},
         { tagName: 'ir', subTags: ['homework1', 'homework2']},
         { tagName: 'mapreduce', subTags: ['assignment1', 'assginment2', 'project', 'paper reading']},
         { tagName: 'others', subTags: ['other']}
     ]
-    this.activatedTag = this.tags[0]
-    this.activatedSubTag = this.activatedTag.subTags[0]
+    this.activatedTag = {}
+    this.activatedSubTag = ''
 
     this.isTagActivated = function(tn) {
         if (tn == this.activatedTag.tagName || tn == this.activatedSubTag) {
@@ -22,60 +27,107 @@ app.controller('timerController', function($scope, $http) {
     }
 
     this.chooseL1Tag = function(chosenTag) {
-        this.activatedTag = chosenTag;
-        this.activatedSubTag = '';
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return;
+        }
+        if (chosenTag == this.activatedTag) {
+            this.activatedTag = {}
+            this.currentStatus = 'init'
+        } else {
+            this.activatedTag = chosenTag
+        }
+
+        this.activatedSubTag = ''
     }
 
-    controller.tasks = []
+    this.chooseL2Tag = function(chosenSubTag) {
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return;
+        }
+        if (this.activatedSubTag == chosenSubTag) {
+            this.activatedSubTag = ''
+            this.currentStatus = 'init'
+        } else {
+            this.activatedSubTag = chosenSubTag;
+            this.currentStatus = 'ready'
+        }
+    }
 
-    $http.get('/week6exp5/tasks').success(function(resp, status) {
-        controller.tasks = resp
-    })
+    /* TIMER */
 
-    controller.task = {}
-    controller.hours = 0
-    controller.minutes = 0
-    controller.seconds = 0
-    controller.inprogress = false
+    this.counter = {
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+    }
+
+    this.inProgressTask = {}
+
+    this.enableStartButton = function() {
+        if (this.currentStatus == 'ready' || this.currentStatus == 'pause') {
+            return true;
+        }
+        return false;
+    }
+    this.enablePauseButton = function() {
+        if (this.currentStatus == 'inProgress') {
+            return true;
+        }
+        return false;
+    }
+    this.enableStopButton = function() {
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return true;
+        }
+        return false;
+    }
+
+    var formatTimer = function(seconds) {
+        return {
+            hours: parseInt(seconds/3600),
+            minutes: parseInt((seconds%3600)/60),
+            seconds: (seconds%3600)%60
+        }
+    }
 
     this.startTask = function() {
-        controller.inprogress = true
-        controller.task['startTime'] = new Date().toString()
-        controller.task['taskName'] = controller.taskName
-        controller.totalSeconds = 0
-        controller.timer = setInterval(function(){
+        if (this.currentStatus != 'pause') {
+            this.inProgressTask['startTime'] = new Date()
+            this.inProgressTask['totalSeconds'] = 0
+        }
+        this.currentStatus = 'inProgress'
+        this.timer = setInterval(function(){
             $scope.$apply(function(){
-                ++controller.totalSeconds
-                controller.hours = parseInt(controller.totalSeconds/3600)
-                controller.minutes = parseInt((controller.totalSeconds%3600)/60)
-                controller.seconds = (controller.totalSeconds%3600)%60
+                ++controller.inProgressTask['totalSeconds']
+                controller.counter = formatTimer(controller.inProgressTask['totalSeconds'])
             })
         }, 1000)
     }
 
-    this.stopTask = function() {
-        controller.inprogress = false
-        clearInterval(controller.timer)
-
-        controller.task['stopTime'] = new Date().toString()
-        controller.task['duration'] = '' + controller.hours + ' hours ' + controller.minutes + ' minutes ' + controller.seconds + ' seconds'
-
-        var newTask = {
-            startTime: controller.task['startTime'],
-            stopTime: controller.task['stopTime'],
-            taskName: controller.task['taskName'],
-            duration: controller.task['duration']
-        }
-
-        $http.put('/week6exp5/addTask', newTask).success( function(resp, status){
-            controller.tasks = resp
-        })
-
-
-        controller.hours = 0
-        controller.minutes = 0
-        controller.seconds = 0
-
-        controller.taskName = ''
+    this.pauseTask = function() {
+        this.currentStatus = 'pause'
+        clearInterval(this.timer)
     }
+
+    this.stopTask = function() {
+        this.currentStatus = 'init'
+        clearInterval(this.timer)
+        this.inProgressTask['stopTime'] = new Date()
+
+        var finishedTask = {
+            l1Tag: this.activatedTag.tagName,
+            l2Tag: this.activatedSubTag,
+            startTime: this.inProgressTask['startTime'],
+            stopTime: this.inProgressTask['stopTime'],
+            duration: formatTimer(this.inProgressTask['totalSeconds']),
+            totalSeconds: this.inProgressTask['totalSeconds']
+        }
+        this.recentTasks.push(finishedTask)
+        this.counter = formatTimer(0)
+        this.activatedTag = {}
+        this.activatedSubTag = ''
+    }
+
+    /* TASK TABLE */
+    this.recentTasks = []
 })

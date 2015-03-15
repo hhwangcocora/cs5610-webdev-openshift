@@ -5,8 +5,8 @@
         <div class="content-padding-10px">
             <div class="col-sm-10, task-tag-list">
                 <ul>
-                    <li  ng-repeat="tag in timerCtrl.tags">
-                        <a href="#" ng-click="timerCtrl.chooseL1Tag(tag)"
+                    <li ng-repeat="tag in timerCtrl.tags">
+                        <a ng-click="timerCtrl.chooseL1Tag(tag)"
                            ng-class="timerCtrl.isTagActivated(tag.tagName) ? 'task-tag-activated' : 'task-tag-unactivated'">
                             {{tag.tagName}}</a>
                     </li>
@@ -17,37 +17,35 @@
 
     <!-- Level 2 category -->
     <div class="row">
-
+        <div class="content-padding-10px">
+            <div class="col-sm-10, task-tag-list" ng-show="timerCtrl.activatedTag">
+                <ul>
+                    <li ng-repeat="subTag in timerCtrl.activatedTag.subTags">
+                        <a ng-click="timerCtrl.chooseL2Tag(subTag)"
+                           ng-class="timerCtrl.isTagActivated(subTag) ? 'task-tag-activated' : 'task-tag-unactivated'">
+                            {{subTag}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Recorder/Timer-->
     <div class="row">
-
+        <div class="timer" ng-class="timerCtrl.enablePauseButton() ? 'timer-activated' : 'timer-unactivated'">
+            {{timerCtrl.counter.hours | fixedTowLen }}:{{timerCtrl.counter.minutes | fixedTowLen }}:{{timerCtrl.counter.seconds | fixedTowLen}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="timer">
+            <button class="btn" ng-click="timerCtrl.startTask()" ng-class="timerCtrl.enableStartButton() ? 'btn-primary' : 'btn-unactivated'" ng-disabled="!timerCtrl.enableStartButton()"><span class="glyphicon glyphicon-play"></span></button>
+            <button class="btn" ng-click="timerCtrl.pauseTask()" ng-class="timerCtrl.enablePauseButton() ? 'btn-warning' : 'btn-unactivated'" ng-disabled="!timerCtrl.enablePauseButton()"><span class="glyphicon glyphicon-pause"></span></button>
+            <button class="btn" ng-click="timerCtrl.stopTask()" ng-class="timerCtrl.enableStopButton() ? 'btn-danger' : 'btn-unactivated'" ng-disabled="!timerCtrl.enableStopButton()"><span class="glyphicon glyphicon-stop"></span></button>
+        </div>
     </div>
 
     <!-- Recent finished tasks -->
-    <div class="row">
-
-    </div>
-
-
-    <h2><small>Record your task duration using following timer.</small></h2>
-    <div class="row">
-        <div class="col-sm-5">
-            <form class="form-inline">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="For example: read paper" ng-model="tc.taskName">
-                </div>
-                <button class="btn btn-primary" ng-click="tc.startTask()" type="button" ng-hide="tc.inprogress">Start Task</button>
-                <!--<button class="btn btn-primary" ng-click="tc.pauseTask()" type="button">Pause</button>-->
-                <button class="btn btn-danger" ng-click="tc.stopTask()" type="button" ng-show="tc.inprogress">Stop Task</button>
-            </form>
-        </div>
-    </div>
-    <div class="row" ng-show="tc.inprogress">
-        <h3> {{tc.hours}} hours {{tc.minutes}} minutes {{tc.seconds}} seconds</h3>
-    </div>
-    <h2><small>Tasks Log</small></h2>
+    <h3>Recent activities <small><a href="#/dashboard">Go to dashboard</a></small></h3>
     <div class="row">
         <table class="table table-hover table-striped">
             <thead>
@@ -55,18 +53,19 @@
                 <th>Start Time</th>
                 <th>Stop Time</th>
                 <th>Duration</th>
-                <th>Task</th>
+                <th>Category</th>
+                <th>Sub-category</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="task in tc.tasks">
-                <td>{{task.startTime}}</td>
-                <td>{{task.stopTime}}</td>
-                <td>{{task.duration}}</td>
-                <td>{{task.taskName}}</td>
+            <tr ng-repeat="task in timerCtrl.recentTasks">
+                <td>{{task.startTime.toString()}}</td>
+                <td>{{task.stopTime.toString()}}</td>
+                <td>{{task.duration.hours | fixedTowLen}}:{{task.duration.minutes | fixedTowLen}}:{{task.duration.seconds | fixedTowLen}}</td>
+                <td>{{task.l1Tag}}</td>
+                <td>{{task.l2Tag}}</td>
             </tr>
             </tbody>
         </table>
     </div>
-
 </div>
