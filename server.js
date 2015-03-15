@@ -7,6 +7,8 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var multer = require('multer');
+var mongoose = require('mongoose')
+
 var app = express()
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -14,6 +16,10 @@ app.use(multer()); // for parsing multipart/form-data
 
 var public_path = __dirname + '/public/'
 app.use(express.static(public_path))
+
+
+var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/pomodoro'
+mongoose.connect(connectionString)
 
 
 /**
@@ -32,7 +38,7 @@ week6exp2.load(app, public_path)
 week6exp3.load(app, public_path)
 week6exp4.load(app, public_path)
 week6exp5.load(app, public_path)
-project.load(app, public_path)
+project.load(app, public_path, mongoose)
 
 
 app.get('/', function(req, res) {
