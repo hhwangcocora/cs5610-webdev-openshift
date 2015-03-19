@@ -9,16 +9,24 @@ app.factory('httpService', function($http, $q){
     var putRequest = function(url, body) {
         var deferred = $q.defer();
         $http.put(url).success(function(resp, status){
-            deferred.resolve(resp)
+            if (resp.message) {
+                deferred.reject(resp)
+            } else {
+                deferred.resolve(resp)
+            }
         }).error(function(resp, status){
-            deferred.reject(resp)
+            deferred.reject({message: resp})
         })
         return deferred.promise;
     }
     var getRequest = function(url) {
         var deferred = $q.defer();
         $http.get(url).success(function(resp, status){
-            deferred.resolve(resp)
+            if (resp.message) {
+                deferred.reject(resp)
+            } else {
+                deferred.resolve(resp)
+            }
         }).error(function(resp, status){
             deferred.reject(resp)
         })

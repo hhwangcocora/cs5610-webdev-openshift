@@ -12,6 +12,13 @@ app.controller('navController', function ($scope, $location, httpService){
             $location.path('/home')
         }
     })
+    $scope.$watch('errorMessage', function() {
+        if ($scope.errorMessage) {
+            $('#messageModal').modal({show: true})
+        } else {
+            $('#messageModal').modal({show: false})
+        }
+    })
 
     /* Login/logout */
 
@@ -28,6 +35,7 @@ app.controller('navController', function ($scope, $location, httpService){
             }, function(resp) {
                 // fail
                 console.log('Login failed with resp: ' + resp);
+                $scope.errorMessage = resp.message
             }
         );
     }
@@ -63,13 +71,13 @@ app.controller('navController', function ($scope, $location, httpService){
                     }, 2000);
                 } else {
                     controller.registerError = 'Register failed. '
-                    if (resp.errorMsg) {
-                        controller.registerError += resp.errorMsg
+                    if (resp.message) {
+                        controller.registerError += resp.message
                     }
                 }
 
             }, function(resp) {
-                controller.registerError = 'Register failed. '
+                controller.registerError = 'Register failed. ' + resp.message
             }
         )
     }

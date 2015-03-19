@@ -8,11 +8,20 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var multer = require('multer');
 var mongoose = require('mongoose')
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy
+var cookieParser = require('cookie-parser')
+var session = require('express-session')
 
 var app = express()
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(multer()); // for parsing multipart/form-data
+app.use(session({secret: 'My secret'}))
+app.use(cookieParser())
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 var public_path = __dirname + '/public/'
 app.use(express.static(public_path))
@@ -38,7 +47,7 @@ week6exp2.load(app, public_path)
 week6exp3.load(app, public_path)
 week6exp4.load(app, public_path)
 week6exp5.load(app, public_path)
-project.load(app, public_path, mongoose)
+project.load(app, public_path, mongoose, passport, LocalStrategy)
 
 
 app.get('/', function(req, res) {

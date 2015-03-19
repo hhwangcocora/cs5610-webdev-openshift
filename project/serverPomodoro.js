@@ -7,9 +7,8 @@
 
 var rootpath = '/project'
 
-var users = {
-    admin: 123
-}
+
+/* Mongoose */
 
 var userSchema = ''  // Schema
 var User = ''  //Model
@@ -74,9 +73,44 @@ var dbAddUser = function(username, password, callback, errorHandler) {
     })
 }
 
-exports.load = function(app, public_path, mongoose) {
+
+/* Authentication */
+
+var initPassport = function(passport, LocalStrategy) {
+    passport.use(new LocalStrategy( function(username, password, done ) {
+        dbFindByName(username, function(user) {
+                if (user.password == password) {
+                    return done(null, user);
+                } else {
+                    return done(null, false, {message: 'Authentication failed'})
+                }
+            }, function(error) {
+                return done(null, false, {message: 'User not exists'})
+            })
+    }))
+    // serialize and deserialize the user to/from the session
+    passport.serializeUser(function(user, done) {
+        done(null, user)
+    })
+    passport.deserializeUser(function(user, done) {
+        done(null, user)
+    });
+}
+
+var auth = function(req, res, next) {
+    if (!req.isAuthenticated())
+        res.send({message: 'Authentication failed'})
+    else
+        next()
+}
+
+
+/* Endpoints */
+
+exports.load = function(app, public_path, mongoose, passport, LocalStrategy) {
 
     initMongo(mongoose)
+    initPassport(passport, LocalStrategy)
 
     dbAddUser('admin', '123', function(user){}, function(error){})
 
@@ -86,21 +120,8 @@ exports.load = function(app, public_path, mongoose) {
     })
 
     // Login
-    app.put(rootpath + '/userAccount/login', function(req, res) {
-        console.log("User login with account " + req);
-        var paramUsername = req.query.username
-        var paramPassword = req.query.password
-        var resp = {username: ''}
-
-        dbFindByName(paramUsername,
-            function(user) { // This call is asynchronous, so response inside the callback function
-                if (user._doc.password == paramPassword) {
-                    resp.username = paramUsername
-                }
-                res.json(resp)
-            }, function(error) {
-                res.json(resp)
-            })
+    app.put(rootpath + '/userAccount/login', passport.authenticate('local'), function(req, res) {
+        res.json({username: req.query.username})
     })
 
     // Register
@@ -114,7 +135,7 @@ exports.load = function(app, public_path, mongoose) {
             resp['username'] = paramUsername
             res.json(resp)
         }, function(error) {
-            resp['errorMsg'] = 'Account already registered.'
+            resp['message'] = 'Account already registered.'
             res.json(resp)
         })
     })
