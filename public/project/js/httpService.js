@@ -8,7 +8,7 @@ app.factory('httpService', function($http, $q){
 
     var putRequest = function(url, body) {
         var deferred = $q.defer();
-        $http.put(url).success(function(resp, status){
+        $http.put(url, body).success(function(resp, status){
             if (resp.message) {
                 deferred.reject(resp)
             } else {
@@ -43,9 +43,15 @@ app.factory('httpService', function($http, $q){
         return putRequest(url, {})
     }
 
+    var addTask = function(task) {
+        var url = rootpath + '/tasks/add'
+        return putRequest(url, task)
+    }
+
     return { // Expose the services
         rootPath: rootpath,
         login: login,
-        register: register
+        register: register,
+        addTask: addTask
     }
 })

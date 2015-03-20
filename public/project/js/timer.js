@@ -2,7 +2,7 @@
  * Created by hhwang on 3/8/15.
  */
 
-app.controller('timerController', function($scope) {
+app.controller('timerController', function($scope, httpService) {
     var controller = this
 
     this.currentStatus = 'init' //init, ready, inProgress, pause
@@ -122,10 +122,15 @@ app.controller('timerController', function($scope) {
             duration: formatTimer(this.inProgressTask['totalSeconds']),
             totalSeconds: this.inProgressTask['totalSeconds']
         }
-        this.recentTasks.push(finishedTask)
+        //this.recentTasks.push(finishedTask)
         this.counter = formatTimer(0)
         this.activatedTag = {}
         this.activatedSubTag = ''
+        httpService.addTask(finishedTask).then(function(resp) {
+            controller.recentTasks.push(resp)
+        }, function(resp) {
+            $scope.errorMessage = 'Failed to save task to server. '
+        })
     }
 
     /* TASK TABLE */

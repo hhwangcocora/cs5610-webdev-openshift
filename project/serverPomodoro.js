@@ -124,6 +124,10 @@ exports.load = function(app, public_path, mongoose, passport, LocalStrategy) {
         res.json({username: req.query.username})
     })
 
+    app.put(rootpath + '/userAccount/logout', auth, function(req, res) {
+
+    })
+
     // Register
     app.put(rootpath + '/userAccount/register', function(req, res) {
         console.log("User register with account " + req.query);
@@ -137,6 +141,25 @@ exports.load = function(app, public_path, mongoose, passport, LocalStrategy) {
         }, function(error) {
             resp['message'] = 'Account already registered.'
             res.json(resp)
+        })
+    })
+
+    // Save task
+    app.put(rootpath + '/tasks/add', auth, function(req, res) {
+        dbFindByName(req.user.username, function(user) {
+            user.tasks.append(req.body)
+            res.json(req.body)
+        }, function(error) {
+            res.json({message: 'Add task failed with error ' + error})
+        })
+    })
+
+    // Get tasks
+    app.get(rootpath + '/tasks/get', auth, function(req, res) {
+        dbFindByName(req.user.username, function(user) {
+            res.json(user.tasks)
+        }, function(error) {
+            res.json({message: 'Get tasks failed with error ' + error})
         })
     })
 }
