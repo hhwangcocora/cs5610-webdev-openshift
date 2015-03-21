@@ -14,6 +14,13 @@ body {
     padding-bottom: 15px;
 }
 
+/* Homepage */
+
+.fix-slide-window1000 {
+    width: 1000px;
+    height: 600px;
+}
+
 /* Timer */
 .timer {
     font-size: 4em;
@@ -30,6 +37,7 @@ body {
 .btn-unactivated {
     background-color: gray;
 }
+
 
 /* Common */
 
@@ -48,24 +56,25 @@ body {
     display: block;
 }
 
-.task-tag-list ul li {
+.timer-tag {
     display: inline-block;
     margin: 0 6px 0 0;
     text-align: match-parent;
     color: #ffffff;
 }
 
-.task-tag-list ul li a {
+.timer-tag a {
     text-decoration: none;
     color: #ffffff;
     cursor: pointer;
     padding: 5px;
+    line-height: 1.5em;
+    font-size: 1.1em;
 }
 
-.task-tag-list ul li a:hover {
+.timer-tag a:hover {
     background-color: tomato;
 }
-
 
 .task-tag-unactivated {
     background-color: #bbbbbb;
@@ -74,4 +83,5 @@ body {
 .task-tag-activated {
     background-color: tomato;
 }
+
 

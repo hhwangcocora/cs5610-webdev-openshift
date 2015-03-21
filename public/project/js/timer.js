@@ -9,14 +9,17 @@ app.controller('timerController', function($scope, httpService) {
 
     /* TAG */
 
-    this.tags = [
-        { tagName: 'web', subTags: ['experiment', 'project', 'course']},
-        { tagName: 'ir', subTags: ['homework1', 'homework2']},
-        { tagName: 'mapreduce', subTags: ['assignment1', 'assginment2', 'project', 'paper reading']},
-        { tagName: 'others', subTags: ['other']}
-    ]
-    this.activatedTag = {}
+    this.tags = []
+
+    httpService.getTags().then(  // initiliaze tags
+        function(rep) {
+            controller.tags = rep
+        }
+    )
+
+    this.activatedTag = ''
     this.activatedSubTag = ''
+
 
     this.isTagActivated = function(tn) {
         if (tn == this.activatedTag.tagName || tn == this.activatedSubTag) {
@@ -31,7 +34,7 @@ app.controller('timerController', function($scope, httpService) {
             return;
         }
         if (chosenTag == this.activatedTag) {
-            this.activatedTag = {}
+            this.activatedTag = ''
             this.currentStatus = 'init'
         } else {
             this.activatedTag = chosenTag
@@ -53,7 +56,91 @@ app.controller('timerController', function($scope, httpService) {
         }
     }
 
+    this.addL1Tag = function() {
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return;
+        }
+        if (this.newL1Tag) {
+            for (idx in this.tags) {
+                if (this.tags[idx].tagName == this.newL1Tag) {
+                    this.newL1Tag = ''
+                    return
+                }
+            }
+            this.tags.push({tagName: this.newL1Tag, subTags: []})
+            updateTag()
+            this.newL1Tag = ''
+        }
+    }
+
+    this.addL2Tag = function() {
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return;
+        }
+        if (this.newL2Tag) {
+            for (idx in this.tags) {
+                if (this.tags[idx].tagName == this.activatedTag.tagName) {
+                    for (idx2 in this.tags[idx].subTags) {
+                        if (this.tags[idx].subTags[idx2] == this.newL2Tag) {
+                            this.newL2Tag = ''
+                            return
+                        }
+                    }
+                    this.tags[idx].subTags.push(this.newL2Tag)
+                    updateTag()
+                    this.newL2Tag = ''
+                }
+            }
+        }
+    }
+
+    this.removeL1Tag = function(tag) {
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return;
+        }
+        for (idx in this.tags) {
+            if (this.tags[idx].tagName == tag.tagName) {
+                this.tags.splice(idx, 1)
+                updateTag()
+                if (this.activatedTag.tagName == tag.tagName) {
+                    this.activatedTag = ''
+                    this.currentStatus = 'init'
+                }
+                break
+            }
+        }
+    }
+
+    this.removeL2Tag = function(tag) {
+        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+            return;
+        }
+        for (idx in this.tags) {
+            if (this.tags[idx].tagName == this.activatedTag.tagName) {
+                for (idx2 in this.tags[idx].subTags) {
+                    if (this.tags[idx].subTags[idx2] == tag) {
+                        this.tags[idx].subTags.splice(idx2, 1)
+                        updateTag()
+                        if (this.activatedSubTag == tag) {
+                            this.activatedSubTag = ''
+                            this.currentStatus = 'init'
+                        }
+                        break
+                    }
+                }
+                break
+            }
+        }
+    }
+
+    var updateTag = function() {
+        httpService.updateTags(controller.tags).then(function(res) {
+        })
+    }
+
     /* TIMER */
+
+
 
     this.counter = {
         hours: 0,
@@ -124,7 +211,7 @@ app.controller('timerController', function($scope, httpService) {
         }
         //this.recentTasks.push(finishedTask)
         this.counter = formatTimer(0)
-        this.activatedTag = {}
+        this.activatedTag = ''
         this.activatedSubTag = ''
         httpService.addTask(finishedTask).then(function(resp) {
             controller.recentTasks.push(resp)

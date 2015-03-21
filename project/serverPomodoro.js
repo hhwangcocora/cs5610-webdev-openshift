@@ -56,7 +56,7 @@ var dbAddUser = function(username, password, callback, errorHandler) {
             username: username,
             password: password,
             tasks: [],
-            tags: [
+            tags: [  // predefined tags
                 { tagName: 'web', subTags: ['experiment', 'project', 'course']},
                 { tagName: 'ir', subTags: ['homework1', 'homework2']},
                 { tagName: 'mapreduce', subTags: ['assignment1', 'assginment2', 'project', 'paper reading']},
@@ -120,16 +120,23 @@ exports.load = function(app, public_path, mongoose, passport, LocalStrategy) {
     })
 
     // Login
-    app.put(rootpath + '/userAccount/login', passport.authenticate('local'), function(req, res) {
+    app.post(rootpath + '/userAccount/login', passport.authenticate('local'), function(req, res) {
         res.json({username: req.query.username})
     })
 
-    app.put(rootpath + '/userAccount/logout', auth, function(req, res) {
+    // Logout
+    app.post(rootpath + '/userAccount/logout', auth, function(req, res) {
+        req.logout()
+        res.send(200)
+    })
 
+    // Loggedin
+    app.get(rootpath + '/userAccount/loggedin', function(req, res) {
+        res.send(req.isAuthenticated() ? req.user : '0');
     })
 
     // Register
-    app.put(rootpath + '/userAccount/register', function(req, res) {
+    app.post(rootpath + '/userAccount/register', function(req, res) {
         console.log("User register with account " + req.query);
         var paramUsername = req.query.username
         var paramPassword = req.query.password
@@ -144,10 +151,11 @@ exports.load = function(app, public_path, mongoose, passport, LocalStrategy) {
         })
     })
 
-    // Save task
-    app.put(rootpath + '/tasks/add', auth, function(req, res) {
+    // Add task
+    app.post(rootpath + '/tasks/add', auth, function(req, res) {
         dbFindByName(req.user.username, function(user) {
-            user.tasks.append(req.body)
+            user.tasks.push(req.body)
+            user.save()
             res.json(req.body)
         }, function(error) {
             res.json({message: 'Add task failed with error ' + error})
@@ -160,6 +168,27 @@ exports.load = function(app, public_path, mongoose, passport, LocalStrategy) {
             res.json(user.tasks)
         }, function(error) {
             res.json({message: 'Get tasks failed with error ' + error})
+        })
+    })
+
+    // Update a user's tags
+    app.post(rootpath + '/tags/update', auth, function(req, res) {
+        dbFindByName(req.user.username, function(user) {
+            console.log(req.body)
+            user.tags = req.body
+            user.save()
+            res.json(req.body)
+        }, function(error) {
+            res.json({message: 'Update tags failed with error ' + error})
+        })
+    })
+
+    // Get tags
+    app.get(rootpath + '/tags/get', auth, function(req, res) {
+        dbFindByName(req.user.username, function(user) {
+            res.json(user.tags)
+        }, function(error) {
+            res.json({message: 'Get tags failed with error ' + error})
         })
     })
 }

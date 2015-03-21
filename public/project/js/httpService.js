@@ -6,9 +6,9 @@ app.factory('httpService', function($http, $q){
 
     var rootpath = '/project'
 
-    var putRequest = function(url, body) {
+    var postRequest = function(url, body) {
         var deferred = $q.defer();
-        $http.put(url, body).success(function(resp, status){
+        $http.post(url, body).success(function(resp, status){
             if (resp.message) {
                 deferred.reject(resp)
             } else {
@@ -35,23 +35,53 @@ app.factory('httpService', function($http, $q){
 
     var login = function(username, password) {
         var url = rootpath + '/userAccount/login?username=' + username + '&password=' + password
-        return putRequest(url, {})
+        return postRequest(url, {})
+    }
+
+    var loggedin = function() {
+        var url = rootpath + '/userAccount/loggedin'
+        return getRequest(url)
+    }
+
+    var logout = function() {
+        var url = rootpath + '/userAccount/logout'
+        return postRequest(url)
     }
 
     var register = function(username, password) {
         var url = rootpath + '/userAccount/register?username=' + username + '&password=' + password
-        return putRequest(url, {})
+        return postRequest(url, {})
     }
 
     var addTask = function(task) {
         var url = rootpath + '/tasks/add'
-        return putRequest(url, task)
+        return postRequest(url, task)
+    }
+
+    var getTasks = function() {
+        var url = rootpath + '/tasks/get'
+        return getRequest(url)
+    }
+
+    var updateTags = function(tags) {
+        var url = rootpath + '/tags/update'
+        return postRequest(url, tags)
+    }
+
+    var getTags = function() {
+        var url = rootpath + '/tags/get'
+        return getRequest(url)
     }
 
     return { // Expose the services
         rootPath: rootpath,
         login: login,
+        loggedin: loggedin,
+        logout: logout,
         register: register,
-        addTask: addTask
+        addTask: addTask,
+        getTasks: getTasks,
+        updateTags: updateTags,
+        getTags: getTags
     }
 })

@@ -4,7 +4,8 @@ var app = angular.module('timerApp', ['ngRoute'])
 app.controller('navController', function ($scope, $location, httpService){
     var controller = this
 
-    $scope.currentUser = ''
+
+
     $scope.$watch('currentUser', function(){
         if ($scope.currentUser) {
             $location.path('/timer')
@@ -22,6 +23,23 @@ app.controller('navController', function ($scope, $location, httpService){
 
     /* Login/logout */
 
+    var loggedin = function() {
+        httpService.loggedin().then(
+            function(resp) {
+                if (resp.username) {
+                    $scope.currentUser = resp.username
+                } else {
+                    $scope.currentUser = ''
+                }
+            }, function(resp) {
+                $scope.currentUser = ''
+                $scope.errorMessage = resp.message
+            }
+        )
+    }
+
+    loggedin()
+
     this.login = function() {
         var account = this.account;
         if (!account || !account.username || !account.password) {
@@ -37,12 +55,13 @@ app.controller('navController', function ($scope, $location, httpService){
                 console.log('Login failed with resp: ' + resp);
                 $scope.errorMessage = resp.message
             }
-        );
+        )
+        this.account = {}
     }
 
     this.logout = function() {
         $scope.currentUser = ''
-        this.account = {}
+        httpService.logout()
     }
 
     /* Register */
@@ -62,6 +81,7 @@ app.controller('navController', function ($scope, $location, httpService){
             function(resp) {
                 if (resp.username) {
                     controller.inRegister = false
+                    controller.registerError = ''
                     setTimeout(function () {
                         $scope.$apply(function() {
                             $('#registerModal').modal('hide')
@@ -116,6 +136,9 @@ app.config(['$routeProvider',
                     templateUrl: 'dashboard.html',
                     controller: 'dashboardController',
                     controllerAs: 'dashboardCtrl'
+                }).
+                when(rootPath + '/profile', {
+                    templateUrl: 'profile.html'
                 }).
                 otherwise(rootPath + '/home')
         }]
