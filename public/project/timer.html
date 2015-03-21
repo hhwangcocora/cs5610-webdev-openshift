@@ -5,15 +5,15 @@
         <div class="content-padding-10px">
             <div class="col-sm-10, task-tag-list">
                 <ul>
-                    <li ng-repeat="tag in timerCtrl.tags" class="timer-tag">
+                    <li ng-repeat="tag in timerCtrl.tags" class="timer-tag show-animation">
                         <a ng-click="timerCtrl.chooseL1Tag(tag)"
-                           ng-class="timerCtrl.isTagActivated(tag.tagName) ? 'task-tag-activated' : 'task-tag-unactivated'">
+                           ng-class="timerCtrl.isTagActivated(tag.tagName, '1') ? 'task-tag-activated' : 'task-tag-unactivated'">
                             {{tag.tagName}}
                             <a ng-click="timerCtrl.removeL1Tag(tag)"
-                               ng-class="timerCtrl.isTagActivated(tag.tagName) ? 'task-tag-activated' : 'task-tag-unactivated'">x</a>
+                               ng-class="timerCtrl.isTagActivated(tag.tagName, '1') ? 'task-tag-activated' : 'task-tag-unactivated'">x</a>
                         </a>
                     </li>
-                    <li class="timer-tag" >
+                    <li class="timer-tag show-animation" >
                         <form class="form-inline">
                             <div class="form-group">
                                 <div class="input-group">
@@ -31,17 +31,17 @@
     <!-- Level 2 category  -->
     <div class="row">
         <div class="content-padding-10px">
-            <div class="col-sm-10, task-tag-list" ng-show="timerCtrl.activatedTag">
+            <div class="col-sm-10 task-tag-list" ng-show="timerCtrl.activatedTag">
                 <ul>
-                    <li ng-repeat="subTag in timerCtrl.activatedTag.subTags" class="timer-tag">
+                    <li ng-repeat="subTag in timerCtrl.activatedTag.subTags" class="timer-tag show-animation" >
                         <a ng-click="timerCtrl.chooseL2Tag(subTag)"
-                           ng-class="timerCtrl.isTagActivated(subTag) ? 'task-tag-activated' : 'task-tag-unactivated'">
+                           ng-class="timerCtrl.isTagActivated(subTag, '2') ? 'task-tag-activated' : 'task-tag-unactivated'">
                             {{subTag}}
                             <a ng-click="timerCtrl.removeL2Tag(subTag)"
-                               ng-class="timerCtrl.isTagActivated(subTag) ? 'task-tag-activated' : 'task-tag-unactivated'">x</a>
+                               ng-class="timerCtrl.isTagActivated(subTag, '2') ? 'task-tag-activated' : 'task-tag-unactivated'">x</a>
                         </a>
                     </li>
-                    <li class="timer-tag">
+                    <li class="timer-tag ">
                         <form class="form-inline">
                             <div class="form-group">
                                 <div class="input-group col-sm-6">

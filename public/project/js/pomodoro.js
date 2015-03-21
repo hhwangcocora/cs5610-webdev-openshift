@@ -1,5 +1,5 @@
 
-var app = angular.module('timerApp', ['ngRoute'])
+var app = angular.module('timerApp', ['ngRoute', 'ngAnimate'])
 
 app.controller('navController', function ($scope, $location, httpService){
     var controller = this
@@ -20,6 +20,10 @@ app.controller('navController', function ($scope, $location, httpService){
             $('#messageModal').modal({show: false})
         }
     })
+
+    $scope.isActive = function(route) {
+        return route == $location.path()
+    }
 
     /* Login/logout */
 

@@ -21,8 +21,8 @@ app.controller('timerController', function($scope, httpService) {
     this.activatedSubTag = ''
 
 
-    this.isTagActivated = function(tn) {
-        if (tn == this.activatedTag.tagName || tn == this.activatedSubTag) {
+    this.isTagActivated = function(tn, level) {
+        if ((tn == this.activatedTag.tagName && level == '1' ) || (level == '2' && tn == this.activatedSubTag)) {
             return true
         } else {
             return false
@@ -41,6 +41,7 @@ app.controller('timerController', function($scope, httpService) {
         }
 
         this.activatedSubTag = ''
+        this.currentStatus = 'init'
     }
 
     this.chooseL2Tag = function(chosenSubTag) {
