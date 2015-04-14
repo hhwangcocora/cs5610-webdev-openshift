@@ -7,52 +7,67 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var multer = require('multer');
+
 var mongoose = require('mongoose')
+
 var passport = require('passport')
 var LocalStrategy = require('passport-local').Strategy
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 
+
 var app = express()
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use(multer()); // for parsing multipart/form-data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer());
 app.use(session({secret: 'My secret'}))
 app.use(cookieParser())
 app.use(passport.initialize())
 app.use(passport.session())
 
-
 var public_path = __dirname + '/public/'
 app.use(express.static(public_path))
-
-
 var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/pomodoro'
 mongoose.connect(connectionString)
 
-
-/**
- * Load all the modules
- */
-
-var week6exp1 = require('./experiments/week6_nodejs/exp1server.js')
-var week6exp2 = require('./experiments/week6_nodejs/exp2server.js')
-var week6exp3 = require('./experiments/week6_nodejs/exp3server.js')
-var week6exp4 = require('./experiments/week6_nodejs/exp4server.js')
-var week6exp5 = require('./experiments/week6_nodejs/exp5server.js')
-var project = require('./project/serverPomodoro.js')
-
-week6exp1.load(app, public_path)
-week6exp2.load(app, public_path)
-week6exp3.load(app, public_path)
-week6exp4.load(app, public_path)
-week6exp5.load(app, public_path)
-project.load(app, public_path, mongoose, passport, LocalStrategy)
-
+/* INDEX */
 
 app.get('/', function(req, res) {
-    res.sendfile(public_path + 'index.html')
+    res.sendfile(public_path + 'project/pomodoro.html')
 })
+
+/* LOGIN LOGOUT REGISTER */
+
+app.post(rootpath + '/userAccount/login', passport.authenticate('local'), function(req, res) {
+    res.json({username: req.query.username})
+})
+
+app.post(rootpath + '/userAccount/logout', auth, function(req, res) {
+    req.logout()
+    res.send(200)
+})
+
+app.get(rootpath + '/userAccount/loggedin', function(req, res) {
+    res.send(req.isAuthenticated() ? req.user : '0');
+})
+
+app.post(rootpath + '/userAccount/register', function(req, res) {
+    console.log("User register with account " + req.query);
+    var paramUsername = req.query.username
+    var paramPassword = req.query.password
+    var resp = {username: ''}
+
+    dbAddUser(paramUsername, paramPassword, function(newUser) {
+        resp['username'] = paramUsername
+        res.json(resp)
+    }, function(error) {
+        resp['message'] = 'Account already registered.'
+        res.json(resp)
+    })
+})
+
+
+
 
 var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 var port = process.env.OPENSHIFT_NODEJS_PORT || 3000

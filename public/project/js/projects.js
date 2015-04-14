@@ -163,9 +163,9 @@ app.controller('projectsController', function($scope) {
             3: []
         }
         // fill in the total/me contributed hours
-        $scope.tasks[1].totalHours = 3.4
-        $scope.tasks[2].totalHours = 2.6
-        $scope.tasks[3].totalHours = 0
+        $scope.tasks[1].totalSeconds = 3.4
+        $scope.tasks[2].totalSeconds = 2.6
+        $scope.tasks[3].totalSeconds = 0
         $scope.tasks[1].myHours = 1.2
         $scope.tasks[2].myHours = 2.2
         $scope.tasks[3].myHours = 0
