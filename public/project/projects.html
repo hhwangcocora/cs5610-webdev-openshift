@@ -1,0 +1,249 @@
+<div class="container" ng-controller="projectsController">
+
+    <!-- Show Project page -->
+    <div ng-hide="showedProjectId">
+        <!-- Projects owned by current user -->
+        <div>
+            <h2 class="styled"><span class="glyphicon glyphicon-asterisk"></span> Owned Projects </h2>
+
+            <div class="row">
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Project</th>
+                        <th class="conditional-display-600">Description</th>
+                        <th class="conditional-display-900">#Contributors</th>
+                        <th class="conditional-display-900">#Tasks</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tr ng-repeat="pid in currentUser.ownedProjects">
+                        <td><img class="small-icon" ng-src="{{allProjects[pid].iconUrl}}"></td>
+                        <td><span> {{allProjects[pid].name}}</span></td>
+                        <td class="conditional-display-600"><span>{{allProjects[pid].description}}</span></td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].contributors.length}}</button></span>
+                        </td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
+                        </td>
+                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Details</button></span></td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+        <!-- Projects joined by current user -->
+        <div>
+            <h2 class="styled"><span class="glyphicon glyphicon-tag"></span> Joined Projects </h2>
+
+            <div class="row">
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Project</th>
+                        <th>Owner</th>
+                        <th class="conditional-display-600">Description</th>
+                        <th class="conditional-display-900">#Contributors</th>
+                        <th class="conditional-display-900">#Tasks</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tr ng-repeat="pid in currentUser.joinedProjects">
+                        <td><img class="small-icon" ng-src="{{allProjects[pid].iconUrl}}"></td>
+                        <td><span> {{allProjects[pid].name}}</span></td>
+                        <td><span><a ng-href="#/user:{{allUsers[allProjects[pid].owner].id}}">{{allUsers[allProjects[pid].owner].username}}</a></span>
+                        </td>
+                        <td class="conditional-display-600"><span>{{allProjects[pid].description}}</span></td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].contributors.length}}</button></span>
+                        </td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
+                        </td>
+                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Details</button></span></td>
+                        <td><span><button class="btn btn-warning" type="button" ng-click="dropProject(pid)">Drop
+                        </button></span></td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+        <!-- All projects -->
+        <div>
+            <h2 class="styled"><span class="glyphicon glyphicon-list-alt"></span> All Projects </h2>
+
+            <div class="row">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span class="glyphicon glyphicon-search"></span>
+                            Search:</label>
+
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control col-sm-4" ng-model="projectFilterString" id="search"
+                                   placeholder="keywords...">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Project</th>
+                        <th>Owner</th>
+                        <th class="conditional-display-600">Description</th>
+                        <th class="conditional-display-900">#Contributors</th>
+                        <th class="conditional-display-900">#Tasks</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="pid in getAllProjectIds() | filter: projectFilter">
+                        <td><img class="small-icon" ng-src="{{allProjects[pid].iconUrl}}"></td>
+                        <td><span> {{allProjects[pid].name}}</span></td>
+                        <td><span><a ng-href="#/user:{{allUsers[allProjects[pid].owner].id}}">{{allUsers[allProjects[pid].owner].username}}</a></span>
+                        </td>
+                        <td class="conditional-display-600"><span>{{allProjects[pid].description}}</span></td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].contributors.length}}</button></span>
+                        </td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
+                        </td>
+                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Details</button></span>
+                        </td>
+                        <td ng-show="isContributor(allProjects[pid].id)"><span><button class="btn btn-warning"
+                                                                                       type="button"
+                                                                                       ng-click="dropProject(pid)">Drop
+                        </button></span></td>
+                        <td ng-hide="isContributor(allProjects[pid].id)"><span><button class="btn btn-primary"
+                                                                                       type="button"
+                                                                                       ng-click="joinProject(pid)">Join
+                        </button></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add a new project -->
+        <div class="margin-bottom">
+            <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Add Project </h2>
+
+            <div class="row">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">Name:</label>
+
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" ng-model="newProject.name" id="name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col-sm-2 control-label">Description:</label>
+
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" ng-model="newProject.description" id="description">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="url" class="control-label col-sm-2">Picture Link:</label>
+
+                        <div class="col-sm-8">
+                            <input type="url" class="form-control" ng-model="newProject.iconUrl" id="url">
+                        </div>
+                    </div>
+                    <div class="col-sm-offset-4">
+                        <button type="button" class="btn btn-success" ng-click="addNewProject()">Add Project</button>
+                        <button type="reset" class="btn btn-default" ng-click="addNewProject()">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Show project's detail page -->
+
+    <div ng-show="showedProjectId">
+        <div class="row margin-bottom">
+            <button class="btn btn-success" ng-click="goBackToProjects()">
+                <span class="glyphicon glyphicon-arrow-left"></span> Go back to projects
+            </button>
+        </div>
+        <div class="row">
+            <img ng-src="{{allProjects[showedProjectId].iconUrl}}" class="medium-icon">
+        </div>
+        <div class="row">
+            <h4>{{allProjects[showedProjectId].name}}
+                <small>owned by <a href="#/user:{{allProjects[showedProjectId].owner}}">{{allUsers[allProjects[showedProjectId].owner].username}}</a></small>
+            </h4>
+        </div>
+        <div class="row">
+            <p>" {{allProjects[showedProjectId].description}} "</p>
+        </div>
+        <div class="row">
+            <h2 class="styled"><span class="glyphicon glyphicon-user"></span> All contributors</h2>
+            <ul class="list-inline">
+                <li ng-repeat="c in allProjects[showedProjectId].contributors">
+                    <a ng-href="#/user:{{c}}">{{allUsers[c].username}}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row">
+            <h2 class="styled"><span class="glyphicon glyphicon-flag"></span> All tasks</h2>
+            <div class="row">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span class="glyphicon glyphicon-search"></span>
+                            Search:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control col-sm-4" ng-model="taskFilterString" placeholder="keywords...">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th class="conditional-display-600">Description</th>
+                        <th>Contributed Hours (all/me)</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tr ng-repeat="tid in allProjects[showedProjectId].tasks | filter: taskFilter">
+                        <td>{{allTasks[tid].name}}</td>
+                        <td class="conditional-display-600">{{tasks[tid].description}}</td>
+                        <td class="conditional-display-900">{{tasks[tid].totalHours / tasks[tid].myHours}}</td>
+                        <td><button class="btn btn-success" ng-click="startTimer(tid)">Start task</button></td>
+                        <td><a class="btn btn-info" data-toggle="collapse" ng-href="#task-{{tid}}" aria-expanded="false"
+                               aria-controls="theComments">
+                            Show stats
+                        </a></td>
+                        <div class="collapse col-sm-6" ng-id="task-{{tid}}">
+                            <div>
+                                <ul class="list-unstyled">
+                                    <li ng-repeat="r in showedRecords[tid]">
+                                        {{allUsers[workRecords[r].user].name}} spent {{workRecords[r].totalSeconds}} hours
+                                        from {{workRecords[r].startTime.toLocaleTimeString()}} to
+                                        {{workRecords[r].endTime.toLocaleTimeString()}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="styled"><span class="glyphicon glyphicon-flag"></span> All tasks</h2>
+        </div>
+    </div>
+</div>

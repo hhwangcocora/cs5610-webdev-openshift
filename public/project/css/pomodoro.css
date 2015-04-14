@@ -3,6 +3,11 @@ body {
     padding-top: 70px;
 }
 
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 /* Navigation */
 
 .navbar-brand span {
@@ -82,6 +87,54 @@ body {
 
 .task-tag-activated {
     background-color: tomato;
+}
+
+.small-icon {
+    border-radius: 10px;
+    background: #8AC007;
+    padding: 5px;
+    width: 60px;
+    height: 60px;
+}
+
+.medium-icon {
+    border-radius: 10px;
+    background: #8AC007;
+    padding: 5px;
+    width: 100px;
+    height: 100px;
+}
+
+table span {
+    font-size: 1.1em;
+    font-family: Arial;
+}
+
+.styled {
+    font-family: Arial;
+    color: #ffffff;
+    background-color: lightsteelblue;
+    padding: 2px 5px 2px 5px;
+}
+
+div.margin-bottom {
+    margin-bottom: 40px
+}
+
+@media screen and (max-width: 600px) {
+    .conditional-display-600, .conditional-display-900 {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width: 900px){
+    .conditional-display-900 {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 900px){
+
 }
 
 

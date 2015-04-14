@@ -4,7 +4,7 @@
 var app = angular.module('courseApp', [])
 app.controller('courseController', function ($scope, $http){
     $scope.currentUser = ''
-    $scope.inRegister = true
+    $scope.registerInProgress = true
     var rootpath = '/week6exp3'
 
     // initialize the data
@@ -35,13 +35,13 @@ app.controller('courseController', function ($scope, $http){
     $scope.registerf = function() {
         $http.put(rootpath + '/register?username=' + $scope.register.username + '&password=' + $scope.register.password1).success(function(resp, status){
             if (resp.username) {
-                $scope.inRegister = false
+                $scope.registerInProgress = false
                 $scope.registerError = ''
                 setTimeout(function () {
                     $scope.$apply(function() {
                         $('#registerModal').modal('hide')
                         $scope.register = {}
-                        $scope.inRegister = true
+                        $scope.registerInProgress = true
                     })
                 }, 2000);
             } else {

@@ -4,8 +4,9 @@ var app = angular.module('timerApp', ['ngRoute', 'ngAnimate'])
 app.controller('navController', function ($scope, $location, httpService){
     var controller = this
 
+    /* Watched variables */
 
-
+    // currentUser is the current login user name
     $scope.$watch('currentUser', function(){
         if ($scope.currentUser) {
             $location.path('/timer')
@@ -13,6 +14,8 @@ app.controller('navController', function ($scope, $location, httpService){
             $location.path('/home')
         }
     })
+
+    // display error message modal once there is any "errorMessage"
     $scope.$watch('errorMessage', function() {
         if ($scope.errorMessage) {
             $('#messageModal').modal({show: true})
@@ -21,12 +24,18 @@ app.controller('navController', function ($scope, $location, httpService){
         }
     })
 
+
+    /* Navigation tab control */
+
+    // If current tab is active, controls the "active" ng-class
     $scope.isActive = function(route) {
         return route == $location.path()
     }
 
+
     /* Login/logout */
 
+    // Check if user already logged in, set "currentUser" accordingly
     var loggedin = function() {
         httpService.loggedin().then(
             function(resp) {
@@ -42,10 +51,10 @@ app.controller('navController', function ($scope, $location, httpService){
         )
     }
 
-    loggedin()
 
+    // Login, the account is controller's "account {username, password}"
     this.login = function() {
-        var account = this.account;
+        var account = this.account;  // account is the username and password in the input fields
         if (!account || !account.username || !account.password) {
             return
         }
@@ -63,14 +72,17 @@ app.controller('navController', function ($scope, $location, httpService){
         this.account = {}
     }
 
+    // Logout
     this.logout = function() {
         $scope.currentUser = ''
         httpService.logout()
     }
 
+
     /* Register */
 
-    this.inRegister = true
+    this.registerInProgress = true  // registerInProgress controls the register form display and success message
+                                 // false only between register response with success and modal still in display
 
     this.matchPassword = function() {
         if (this.newUser) {
@@ -80,23 +92,28 @@ app.controller('navController', function ($scope, $location, httpService){
         }
     }
 
+    // register as a new user, controller's "newUser {username, password1}"
     this.register = function() {
         httpService.register(this.newUser.username, this.newUser.password1).then(
             function(resp) {
                 if (resp.username) {
-                    controller.inRegister = false
+                    // Register succeeded
+                    controller.registerInProgress = false
                     controller.registerError = ''
+                    controller.account = {username: resp.username, password: ''} // fill username field with this registered username
+                    // Display the success message and wait for 2 seconds before hide register modal
                     setTimeout(function () {
                         $scope.$apply(function() {
-                            $('#registerModal').modal('hide')
-                            controller.inRegister = true
-                            controller.newUser = {}
+                            $('#registerModal').modal('hide')  // hide register modal
+                            controller.registerInProgress = true
+                            controller.newUser = {}  // clear the register information on the form
                         })
                     }, 2000);
                 } else {
+                    // Register failed
                     controller.registerError = 'Register failed. '
                     if (resp.message) {
-                        controller.registerError += resp.message
+                        controller.registerError += resp.message  // display register failure message
                     }
                 }
 
@@ -106,7 +123,14 @@ app.controller('navController', function ($scope, $location, httpService){
         )
     }
 
+
+    // First of all, try to login
+    loggedin()
+
 })
+
+
+
 
 app.filter('fixedTowLen', function () {
     return function (number) {
@@ -122,6 +146,10 @@ app.filter('fixedTowLen', function () {
     }
 })
 
+
+
+/* Routing */
+
 app.config(['$routeProvider',
         function($routeProvider){
             var rootPath = ''
@@ -136,15 +164,22 @@ app.config(['$routeProvider',
                     controller: 'timerController',
                     controllerAs: 'timerCtrl'
                 }).
-                when(rootPath + '/dashboard', {
-                    templateUrl: 'dashboard.html',
-                    controller: 'dashboardController',
-                    controllerAs: 'dashboardCtrl'
+                when(rootPath + '/updates', {
+                    templateUrl: 'updates.html',
+                    controller: 'updatesController',
+                    controllerAs: 'updatesCtrl'
                 }).
                 when(rootPath + '/profile', {
-                    templateUrl: 'profile.html'
+                    templateUrl: 'profile.html',
+                    controller: 'profileController',
+                    controllerAs: 'profileCtrl'
                 }).
-                otherwise(rootPath + '/home')
+                when(rootPath + '/projects', {
+                    templateUrl: 'projects.html',
+                    controller: 'projectsController',
+                    controllerAs: 'projectsCtrl'
+                }).
+                otherwise(rootPath + '/home')  // default to homepage
         }]
 )
 

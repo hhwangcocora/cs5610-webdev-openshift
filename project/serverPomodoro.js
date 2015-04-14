@@ -10,26 +10,24 @@ var rootpath = '/project'
 
 /* Mongoose */
 
-var userSchema = ''  // Schema
-var User = ''  //Model
+var userSchema = ''  // User Schema
+var User = ''  // User Model
+var projectSchema = '' // Project Schema
+var Project = '' // Project Model
+var taskSchema = '' // Task Schema
+var Task = '' // Task Model
+var recordSchema = '' // Work Record Schema
+var Record = '' // Work Record Model
 
 var initMongo = function(mongoose) {
     // Create mongo db model
     userSchema = mongoose.Schema({
-        username: String,
+        userName: String,
+        firstName: String,
+        lastName: String,
         password: String,
-        tasks:[{
-            l1Tag: String,
-            l2Tag: String,
-            startTime: Date,
-            stopTime: Date,
-            duration: {hours: Number, minutes: Number, seconds: Number},
-            totalSeconds: Number
-        }],
-        tags: [{
-            tagName: String,
-            subTags: [String]
-        }]
+        email: String,
+        gender: String
     })
 
     User = mongoose.model('User', userSchema)

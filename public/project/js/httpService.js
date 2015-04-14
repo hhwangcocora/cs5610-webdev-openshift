@@ -33,6 +33,9 @@ app.factory('httpService', function($http, $q){
         return deferred.promise;
     }
 
+
+    /* Login and Logout */
+
     var login = function(username, password) {
         var url = rootpath + '/userAccount/login?username=' + username + '&password=' + password
         return postRequest(url, {})
@@ -48,10 +51,22 @@ app.factory('httpService', function($http, $q){
         return postRequest(url)
     }
 
+
+    /* Register */
+
     var register = function(username, password) {
         var url = rootpath + '/userAccount/register?username=' + username + '&password=' + password
         return postRequest(url, {})
     }
+
+
+    /* Projects */
+
+
+    /* Updates */
+
+
+    /* Tasks */
 
     var addTask = function(task) {
         var url = rootpath + '/tasks/add'
