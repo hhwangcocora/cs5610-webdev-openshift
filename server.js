@@ -155,6 +155,7 @@ app.post(rootpath + '/projects/add', auth.auth, function(req, res) {
     })
 })
 
+// ok
 app.post(rootpath + '/projects/drop', auth.auth, function(req, res) {
     // projectid
     console.log('Drop project ')
@@ -169,6 +170,7 @@ app.post(rootpath + '/projects/drop', auth.auth, function(req, res) {
 
 })
 
+// ok
 app.post(rootpath + '/projects/join', auth.auth, function(req, res) {
     // projectid
     printRequest(req)
@@ -184,8 +186,72 @@ app.post(rootpath + '/projects/join', auth.auth, function(req, res) {
 
 /* Task */
 
-app.get(rootpath + '/tasks/', auth.auth, function(req, res) {
+app.get(rootpath + '/tasks', auth.auth, function(req, res) {
+    console.log('/tasks/')
     printRequest(req)
+    var projectid = req.query.projectid
+    db.getTaskByProject(projectid, function(tasks) {
+        res.json(tasks)
+    }, function(err) {
+        res.json({message: 'Failed'})
+    })
+})
+
+app.post(rootpath + '/tasks/add', auth.auth, function(req, res) {
+    console.log('/tasks/add')
+    printRequest(req)
+    var task = req.body
+    db.addNewTask(task.name, task.description, task.project, function(newTask) {
+        res.json(newTask)
+    }, function(err) {
+        res.json({message: err})
+    })
+})
+
+
+app.post(rootpath + '/tasks/own', auth.auth, function(req, res) {
+    console.log('/tasks/own')
+    printRequest(req)
+    var taskid = req.query.taskid
+    db.ownTask(taskid, req.user.id, function(newTask) {
+        res.json(newTask)
+    }, function(err) {
+        res.json({message: err})
+    })
+})
+
+
+app.post(rootpath + '/tasks/drop', auth.auth, function(req, res) {
+    console.log('/tasks/drop')
+    printRequest(req)
+    var taskid = req.query.taskid
+    db.dropTask(taskid, req.user.id, function(newTask) {
+        res.json(newTask)
+    }, function(err) {
+        res.json({message: err})
+    })
+})
+
+app.post(rootpath + '/tasks/complete', auth.auth, function(req, res) {
+    console.log('/tasks/complete')
+    printRequest(req)
+    var taskid = req.query.taskid
+    db.completeTask(taskid, function(newTask) {
+        res.json(newTask)
+    }, function(err) {
+        res.json({message: err})
+    })
+})
+
+app.post(rootpath + '/tasks/addRecord', auth.auth, function(req, res) {
+    console.log('/tasks/addRecord')
+    printRequest(req)
+    var record = req.body
+    db.addNewRecord(record.task, req.user.id, record.startTime, record.endTime, record.totalSeconds, function(task) {
+        res.json(task)
+    }, function(err) {
+        res.json({message: err})
+    })
 })
 
 /* START LISTENING ON THE PORT */

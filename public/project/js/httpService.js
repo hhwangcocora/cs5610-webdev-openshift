@@ -94,24 +94,28 @@ app.factory('httpService', function($http, $q){
 
     /* Tasks */
 
-    var addTask = function(task) {
-        var url = rootpath + '/tasks/add'
-        return postRequest(url, task)
+    var getTaskByProject = function(pid) {
+        return getRequest(rootpath + '/tasks?projectid=' + pid)
     }
 
-    var getTasks = function() {
-        var url = rootpath + '/tasks/get'
-        return getRequest(url)
+    var addTask = function(task) { // name, description, project
+        return postRequest(rootpath + '/tasks/add', task)
     }
 
-    var updateTags = function(tags) {
-        var url = rootpath + '/tags/update'
-        return postRequest(url, tags)
+    var ownTask = function(tid) {
+        return postRequest(rootpath + '/tasks/own?taskid=' + tid, {})
     }
 
-    var getTags = function() {
-        var url = rootpath + '/tags/get'
-        return getRequest(url)
+    var dropTask = function(tid) {
+        return postRequest(rootpath + '/tasks/drop?taskid=' + tid, {})
+    }
+
+    var completeTask = function(tid) {
+        return postRequest(rootpath + '/tasks/complete?taskid=' + tid, {})
+    }
+
+    var addNewRecord = function(record) { // task, startTime, endTime, totalSeconds
+        return postRequest(rootpath + '/tasks/addRecord', record)
     }
 
     return { // Expose the services
@@ -127,10 +131,12 @@ app.factory('httpService', function($http, $q){
         joinProject: joinProject,
         dropProject: dropProject,
 
-
+        getTaskByProject: getTaskByProject,
         addTask: addTask,
-        getTasks: getTasks,
-        updateTags: updateTags,
-        getTags: getTags
+        ownTask: ownTask,
+        dropTask: dropTask,
+        completeTask: completeTask,
+        addNewRecord: addNewRecord
+
     }
 })

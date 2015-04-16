@@ -77,8 +77,13 @@ app.controller('projectsController', function($scope, httpService) {
     $scope.showedRecords = {}  // task id -> [work record ids]
     $scope.allProjectIds = []
     $scope.allUserIds = []
+
     controller.loadData()
     console.log($scope.currentUser)
+
+    $scope.currentTasks = {}
+    $scope.allTasks = []
+    $scope.ownedTasks = []
 
 
     // Is current user a contributor of the project
@@ -94,8 +99,8 @@ app.controller('projectsController', function($scope, httpService) {
     }
 
     $scope.taskFilter = function(tid) {
-        var task = $scope.tasks[tid]
-        var filter = new RegEx($scope.taskFilterString, 'i')
+        var task = $scope.currentTasks[tid]
+        var filter = new RegExp($scope.taskFilterString, 'i')
         return !filter || filter.test(task.name) || filter.test(task.description)
     }
 
@@ -125,12 +130,83 @@ app.controller('projectsController', function($scope, httpService) {
     }
 
     $scope.showProjectDetails = function(pid) {
-        // TODO: work on this! Use routing to support task page
+        // get task by project and then traverse them
+        httpService.getTaskByProject(pid).then(function(resp) {
+            $scope.currentTasks = resp
+            var temp1 = []
+            var temp2 = []
+            for (var t in $scope.currentTasks) {
+                temp1.push(t)
+                if ($scope.currentTasks[t].owner == $scope.currentUserId) {
+                    temp2.push(t)
+                }
+            }
+
+            $scope.allTasks = temp1
+            $scope.ownedTasks = temp2
+            $scope.showedProjectId = pid
+
+            console.log('Selected project is ' + pid)
+            console.log($scope.allTasks)
+            console.log($scope.ownedTasks)
+        }, function(resp) {
+            $scope.errorMessage = resp.message
+        })
     }
 
     $scope.goBackToProjects = function() {
         $scope.showedProjectId = null
     }
 
+    $scope.showDetailPage = function() {
+        return $scope.showedProjectId != null
+    }
 
+    $scope.addNewTask = function(newTask) {
+        var t = {
+            name: newTask.name,
+            description: newTask.description,
+            project: $scope.showedProjectId
+        }
+        httpService.addTask(t).then(function(resp) {
+            $scope.showProjectDetails($scope.showedProjectId)
+        }, function(resp) {
+            $scope.errorMessage = resp.message
+        })
+    }
+
+    $scope.ownTask = function(tid) {
+        httpService.ownTask(tid).then(function(resp) {
+            $scope.showProjectDetails($scope.showedProjectId)
+        }, function(resp) {
+            $scope.errorMessage = resp.message
+        })
+    }
+
+    $scope.dropTask = function(tid) {
+        httpService.dropTask(tid).then(function(resp) {
+            $scope.showProjectDetails($scope.showedProjectId)
+        }, function(resp) {
+            $scope.errorMessage = resp.message
+        })
+    }
+
+    $scope.completeTask = function(tid) {
+        httpService.completeTask(tid).then(function(resp) {
+            $scope.showProjectDetails($scope.showedProjectId)
+        }, function(resp) {
+            $scope.errorMessage = resp.message
+        })
+    }
+
+    $scope.startTimer = function(tid) {
+        console.log('start timer')
+    }
+
+    $scope.showStats = function(tid) {
+        $scope.taskStatsId = tid
+        $('#statsModal').modal({
+            show: true
+        })
+    }
 })

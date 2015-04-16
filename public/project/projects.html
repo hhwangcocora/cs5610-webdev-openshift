@@ -1,7 +1,7 @@
 <div class="container">
 
     <!-- Show Project page -->
-    <div ng-hide="showedProjectId">
+    <div ng-hide="showDetailPage()">
         <!-- Projects owned by current user -->
         <div>
             <h2 class="styled"><span class="glyphicon glyphicon-asterisk"></span> Owned Projects </h2>
@@ -169,7 +169,7 @@
 
     <!-- Show project's detail page -->
 
-    <div ng-show="showedProjectId">
+    <div ng-show="showDetailPage()">
         <div class="row margin-bottom">
             <button class="btn btn-success" ng-click="goBackToProjects()">
                 <span class="glyphicon glyphicon-arrow-left"></span> Go back to projects
@@ -194,6 +194,43 @@
                 </li>
             </ul>
         </div>
+
+        <div class="row">
+            <h2 class="styled"><span class="glyphicon glyphicon-star"></span> My tasks</h2>
+            <div class="row">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th class="conditional-display-900">Description</th>
+                        <th class="conditional-display-600">Hours</th>
+                        <th class="conditional-display-600">Finished</th>
+
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="tid in ownedTasks">
+                        <td>{{currentTasks[tid].name}}</td>
+                        <td class="conditional-display-900">{{currentTasks[tid].description}}</td>
+                        <td class="conditional-display-600">{{secToHours(currentTasks[tid].totalSeconds)}}</td>
+                        <td class="conditional-display-600">{{currentTasks[tid].completed ? 'YES' : 'NO'}}</td>
+
+                        <td><button class="btn btn-danger" ng-click="dropTask(tid)">Un-own</button></td>
+                        <td><button class="btn btn-success" ng-click="startTimer(tid)"  ng-disabled="currentTasks[tid].completed"><span class="conditional-display-600">Start</span> <span class="glyphicon glyphicon-time"></span> </button></td>
+                        <td><button class="btn btn-warning" ng-click="completeTask(tid)" ng-disabled="currentTasks[tid].completed">Finish</button>
+                        </td>
+                        <!-- Button trigger modal -->
+                        <td><button type="button" class="btn btn-default" ng-click="showStats(tid)">Stats</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="row">
             <h2 class="styled"><span class="glyphicon glyphicon-flag"></span> All tasks</h2>
             <div class="row">
@@ -212,38 +249,90 @@
                     <thead>
                     <tr>
                         <th>Task</th>
-                        <th class="conditional-display-600">Description</th>
-                        <th>Contributed Hours (all/me)</th>
+                        <th class="conditional-display-900">Description</th>
+                        <th>Owner</th>
+                        <th class="conditional-display-600">Hours</th>
+                        <th>Finished</th>
                         <th>&nbsp;</th>
                         <th>&nbsp;</th>
                     </tr>
                     </thead>
-                    <tr ng-repeat="tid in allProjects[showedProjectId].tasks | filter: taskFilter">
-                        <td>{{allTasks[tid].name}}</td>
-                        <td class="conditional-display-600">{{tasks[tid].description}}</td>
-                        <td class="conditional-display-900">{{tasks[tid].totalHours / tasks[tid].myHours}}</td>
-                        <td><button class="btn btn-success" ng-click="startTimer(tid)">Start task</button></td>
-                        <td><a class="btn btn-info" data-toggle="collapse" ng-href="#task-{{tid}}" aria-expanded="false"
-                               aria-controls="theComments">
-                            Show stats
-                        </a></td>
-                        <div class="collapse col-sm-6" ng-id="task-{{tid}}">
-                            <div>
-                                <ul class="list-unstyled">
-                                    <li ng-repeat="r in showedRecords[tid]">
-                                        {{allUsers[workRecords[r].user].name}} spent {{workRecords[r].totalSeconds}} hours
-                                        from {{workRecords[r].startTime.toLocaleTimeString()}} to
-                                        {{workRecords[r].endTime.toLocaleTimeString()}}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                    <tr ng-repeat="tid in allTasks | filter: taskFilter">
+                        <td>{{currentTasks[tid].name}}</td>
+                        <td class="conditional-display-900">{{currentTasks[tid].description}}</td>
+                        <td>{{allUsers[currentTasks[tid].owner].username}}</td>
+                        <td class="conditional-display-600">{{secToHours(currentTasks[tid].totalSeconds)}}</td>
+                        <td>{{currentTasks[tid].completed ? 'YES' : 'NO'}}</td>
+                        <td><button class="btn btn-success" ng-click="ownTask(tid)" ng-disabled="currentTasks[tid].owner != null">Own</button></td>
+                        <!-- Button trigger modal -->
+                        <td><button type="button" class="btn btn-default" ng-click="showStats(tid)">Stats</button></td>
                     </tr>
                 </table>
             </div>
         </div>
-        <div class="row">
-            <h2 class="styled"><span class="glyphicon glyphicon-flag"></span> All tasks</h2>
+
+        <div class="margin-bottom">
+            <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Add Task </h2>
+
+            <div class="row">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="tname" class="col-sm-2 control-label">Name:</label>
+
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" ng-model="newTask.name" id="tname">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tdescription" class="col-sm-2 control-label">Description:</label>
+
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" ng-model="newTask.description" id="tdescription">
+                        </div>
+                    </div>
+
+                    <div class="col-sm-offset-4">
+                        <button type="button" class="btn btn-success" ng-click="addNewTask(newTask)">Add Task</button>
+                        <button type="reset" class="btn btn-default">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Stats</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="table table-hover table-striped">
+
+                        <div class="row">
+                            <div class="col-sm-2">Task</div>
+                            <div class="col-sm-2">User</div>
+                            <div class="col-sm-2">Start</div>
+                            <div class="col-sm-2">End</div>
+                            <div class="col-sm-2">Duration</div>
+                        </div>
+
+                        <div  class="row" ng-repeat="rec in currentTasks[taskStatsId].records">
+                            <div class="col-sm-2">{{currentTasks[taskStatsId].name}}</div>
+                            <div class="col-sm-2">{{allUsers[rec.user].name}}</div>
+                            <div class="col-sm-2">{{formatDate(rec.startTime)}}</div>
+                            <div class="col-sm-2">{{formatDate(rec.endTime)}}</div>
+                            <div class="col-sm-2">{{secToHours(rec.totalSeconds)}} hours</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

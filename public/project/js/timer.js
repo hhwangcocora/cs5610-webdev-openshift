@@ -11,11 +11,11 @@ app.controller('timerController', function($scope, httpService) {
 
     this.tags = []
 
-    httpService.getTags().then(  // initiliaze tags
-        function(rep) {
-            controller.tags = rep
-        }
-    )
+    //httpService.getTags().then(  // initiliaze tags
+    //    function(rep) {
+    //        controller.tags = rep
+    //    }
+    //)
 
     this.activatedTag = ''
     this.activatedSubTag = ''

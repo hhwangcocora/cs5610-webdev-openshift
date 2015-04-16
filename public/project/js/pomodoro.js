@@ -127,6 +127,35 @@ app.controller('navController', function ($scope, $location, httpService){
     // First of all, try to login
     loggedin()
 
+
+
+
+
+
+
+    /* Utility */
+    $scope.convertTo2Digits = function(number) {
+        var result = '' + number
+        if (result.length == 1) {
+            return '0' + number
+        }
+        return number
+    }
+
+    $scope.secToHours = function(sec) {
+        return ( sec / 3600).toFixed(2)
+    }
+
+    $scope.formatDate = function(date) {
+        console.log(date)
+        return '' + (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
+        + ' ' + date.getHours() + ':' + date.getMinutes()
+     }
+
+
+
+
+
 })
 
 
@@ -181,5 +210,6 @@ app.config(['$routeProvider',
                 }).
                 otherwise(rootPath + '/home')  // default to homepage
         }]
+
 )
 

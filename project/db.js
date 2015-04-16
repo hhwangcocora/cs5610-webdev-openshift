@@ -270,7 +270,6 @@ var addNewProject = function(pname, description, picUrl, owner, successHandler, 
             name: pname,
             description: description,
             picUrl: picUrl,
-            tasks: [],
             contributors: [],
             owner: owner
         })
@@ -344,15 +343,15 @@ var dropProject = function(projectid, userid, successHandler, errorHandler) {
 
 var getTaskByProject = function(pid, successHandler, errorHandler) {
     Task.find({project: pid}, function(err, tasks) {
-        if (tasks) {
+        if (err) {
+            console.log(err)
+            errorHandler(err)
+        } else {
             var result = {}
             tasks.forEach(function(task) {
                 result[task.id] = task
             })
-            successHandler(tasks)
-        } else {
-            console.log(err)
-            errorHandler(err)
+            successHandler(result)
         }
     })
 }
@@ -392,17 +391,20 @@ var addNewTask = function(tname, description, project, successHandler, errorHand
             project: project,
             records: [],
             owner: '',
-            totalHours: 0,
+            totalSeconds: 0,
             completed: false
         })
         taskIdCounter++
         saveMeta()
-        newTask.save(function (err) {
-            if (err) {
-                errorHandler(err)
-            } else {
-                successHandler(newTask)
-            }
+        newTask.save()
+        // save to project
+        getProjectById(project, function(project) {
+            project.tasks.push(newTask.id)
+            project.save()
+            console.log('add task done')
+            successHandler(newTask)
+        }, function(err) {
+            errorHandler('Failed to update project')
         })
     })
 }
