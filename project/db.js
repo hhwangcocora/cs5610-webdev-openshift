@@ -7,6 +7,8 @@ var projectSchema = '' // Project Schema
 var Project = '' // Project Model
 var taskSchema = '' // Task Schema
 var Task = '' // Task Model
+var metaSchema = '' // Meta Schema
+var Meta = '' // Meta Model
 
 var userIdCounter = 0
 var projectIdCounter = 0
@@ -16,7 +18,7 @@ var init = function(mongoose) {
     // User
     userSchema = mongoose.Schema({
         id: Number,
-        userName: String,
+        username: String,
         firstName: String,
         lastName: String,
         password: String,
@@ -52,13 +54,53 @@ var init = function(mongoose) {
         completed: Boolean
     })
     Task = mongoose.model('Task', taskSchema)
+
+    // Meta
+    metaSchema = mongoose.Schema({
+        userIdCounter: Number,
+        projectIdCounter: Number,
+        taskIdCounter: Number
+    })
+    Meta = mongoose.model('Meta', metaSchema)
+
+    // Initialize all counters
+    Meta.findOne({}, function(err, meta) {
+        if (meta) {
+
+            userIdCounter = meta.userIdCounter
+            projectIdCounter = meta.projectIdCounter
+            taskIdCounter = meta.taskIdCounter
+
+        } else {
+            console.log('create new meta')
+            var newMeta = new Meta({
+                userIdCounter: 0,
+                projectIdCounter: 0,
+                taskIdCounter: 0
+            })
+            newMeta.save()
+        }
+    })
+
 }
 
+var saveMeta = function() {
+    Meta.findOne({}, function(err, meta) {
+
+                meta.userIdCounter = userIdCounter
+                meta.projectIdCounter = projectIdCounter
+                meta.taskIdCounter = taskIdCounter
+                meta.save()
+
+
+    })
+}
 
 /* User */
 
 var getUserByName = function(uname, successHandler, errorHandler) {
-    var query = User.where({userName: uname})
+    console.log(uname)
+    var query = User.where({username: uname})
     query.findOne(function (err, user) {
         if (user) {
             successHandler(user)
@@ -86,7 +128,17 @@ var getUserList = function(successHandler, errorHandler) {
         if (users) {
             var result = {}
             users.forEach(function(user) {
-                result[user.id] = user
+                result[user.id] = {
+                    id: user.id,
+                    username: user.username,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    gender: user.gender,
+                    picUrl: user.picUrl,
+                    contributedProjects: user.contributedProjects,
+                    ownedProjects: user.ownedProjects
+                }
             })
             successHandler(result)
         } else {
@@ -102,7 +154,7 @@ var addNewUser = function(username, password, successHandler, errorHandler) {
     }, function(error) {
         var newUser = new User({
             id: userIdCounter,
-            userName: username,
+            username: username,
             firstName: '',
             lastName: '',
             password: password,
@@ -113,6 +165,7 @@ var addNewUser = function(username, password, successHandler, errorHandler) {
             ownedProjects: []
         })
         userIdCounter++
+        saveMeta()
         newUser.save(function (err) {
             if (err) {
                 errorHandler(err)
@@ -140,11 +193,12 @@ var updateUser = function(userid, u, successHandler, errorHandler) {
 
 /* Project */
 
+
 var getProjectList = function(successHandler, errorHandler) {
     Project.find({}, function(err, projects) {
         if (projects) {
             var result = {}
-            users.forEach(function(project) {
+            projects.forEach(function(project) {
                 result[project.id] = project
             })
             successHandler(result)
@@ -158,7 +212,7 @@ var getProjectByOwner = function(userid, successHandler, errorHandler) {
     Project.find({owner: userid}, function(err, projects) {
         if (projects) {
             var result = {}
-            users.forEach(function(project) {
+            projects.forEach(function(project) {
                 result[project.id] = project
             })
             successHandler(result)
@@ -172,7 +226,7 @@ var getProjectByContributor = function(userid, successHandler, errorHandler) {
     Project.find({contributors: {'$in' : [userid]}}, function(err, projects) {
         if (projects) {
             var result = {}
-            users.forEach(function(project) {
+            projects.forEach(function(project) {
                 result[project.id] = project
             })
             successHandler(result)
@@ -221,10 +275,18 @@ var addNewProject = function(pname, description, picUrl, owner, successHandler, 
             owner: owner
         })
         projectIdCounter++
+        saveMeta()
         newProject.save(function (err) {
             if (err) {
                 errorHandler(err)
             } else {
+                // put the project to the ower's owned projects
+                getUserById(owner, function(user) {
+                    user.ownedProjects.push(newProject.id)
+                    user.save()
+                }, function(err) {
+                    errorHandler(err)
+                })
                 successHandler(newProject)
             }
         })
@@ -232,57 +294,50 @@ var addNewProject = function(pname, description, picUrl, owner, successHandler, 
 }
 
 var joinProject = function(projectid, userid, successHandler, errorHandler) {
-    Project.update({id: projectid},
-        {$push: {contributors: userid}},
-        {upsert: true},
-        function(err, project) {
-            if (project) {
-                User.update({id: userid},
-                    {$push: {contributedProjects: projectid}},
-                    {upsert: true},
-                    function(err, user) {
-                        if (user) {
-                            successHandler(user)
-                        } else {
-                            console.log(err)
-                            errorHandler(err)
-                        }
-                    }
-                )
-            } else {
-                console.log(err)
-                errorHandler(err)
-            }
+    getProjectById(projectid, function(project) {
+        var idx = project.contributors.indexOf(userid)
+        if (idx <= 0) {
+            project.contributors.push(userid)
+            project.save()
         }
-    )
-
-    //getProjectById(pid, function(project) {
-    //    project.contributors.push(userid)
-    //    project.save()
-    //    getUserById(userid, function(user) {
-    //        user.contributedProjects.push(projectid)
-    //        user.save()
-    //    }, function(err) {
-    //        console.log(err)
-    //        errorHandler(err)
-    //    })
-    //}, function(err) {
-    //    console.log(err)
-    //    errorHandler(err)
-    //})
+        getUserById(userid, function(user) {
+            var idx2 = user.contributedProjects.indexOf(project.id)
+            if (idx2 <= 0) {
+                user.contributedProjects.push(projectid)
+                user.save()
+            }
+            successHandler(project)
+        }, function(err) {
+            console.log(err)
+            errorHandler(err)
+        })
+    }, function(err) {
+        console.log(err)
+        errorHandler(err)
+    })
 
 }
 
 var dropProject = function(projectid, userid, successHandler, errorHandler) {
-    // TODO: remove project from user collection and remove user from project collection
-    //getProjectById(pid, function(project) {
-    //    if (project.contributors.indexOf(userid))
-    //    project.contributors.push(userid)
-    //    project.save()
-    //    successHandler(project)
-    //}, function(err) {
-    //    errorHandler(err)
-    //})
+    getProjectById(projectid, function(project) {
+        var idx = project.contributors.indexOf(userid)
+        if (idx > -1) {
+            project.contributors.splice(idx, 1)
+            project.save()
+            getUserById(userid, function(user) {
+                var idx2 = user.contributedProjects.indexOf(project.id)
+                if (idx2 > -1) {
+                    user.contributedProjects.splice(idx2, 1)
+                    user.save()
+                }
+            }, function(err) {
+                //errorHandler(err)
+            })
+        }
+        successHandler(project)
+    }, function(err) {
+        errorHandler(err)
+    })
 }
 
 /* Task */
@@ -341,6 +396,7 @@ var addNewTask = function(tname, description, project, successHandler, errorHand
             completed: false
         })
         taskIdCounter++
+        saveMeta()
         newTask.save(function (err) {
             if (err) {
                 errorHandler(err)
@@ -399,6 +455,28 @@ var completeTask = function(taskid, successHandler, errorHandler) {
 module.exports = function(mongoose) {
     init(mongoose)
     return {
+        getUserList: getUserList,
+        getUserById: getUserById,
+        getUserByName: getUserByName,
+        addNewUser: addNewUser,
+        updateUser: updateUser,
 
+        getProjectList: getProjectList,
+        getProjectById: getProjectById,
+        getProjectByName: getProjectByName,
+        getProjectByOwner: getProjectByOwner,
+        getProjectByContributor: getProjectByContributor,
+        addNewProject: addNewProject,
+        joinProject: joinProject,
+        dropProject: dropProject,
+
+        getTaskById: getTaskById,
+        getTaskByName: getTaskByName,
+        getTaskByProject: getTaskByProject,
+        addNewTask: addNewTask,
+        addNewRecord: addNewRecord,
+        ownTask: ownTask,
+        dropTask: dropTask,
+        completeTask: completeTask
     }
 }

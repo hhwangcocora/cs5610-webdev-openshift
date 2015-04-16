@@ -40,7 +40,7 @@ app.controller('navController', function ($scope, $location, httpService){
         httpService.loggedin().then(
             function(resp) {
                 if (resp.username) {
-                    $scope.currentUser = resp.username
+                    $scope.currentUser = resp
                 } else {
                     $scope.currentUser = ''
                 }
@@ -62,7 +62,7 @@ app.controller('navController', function ($scope, $location, httpService){
             function(resp) {
                 // success
                 console.log('Login succeeded with resp: ' + resp);
-                $scope.currentUser = resp.username;
+                $scope.currentUser = resp;
             }, function(resp) {
                 // fail
                 console.log('Login failed with resp: ' + resp);
