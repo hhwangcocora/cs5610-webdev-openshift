@@ -323,8 +323,8 @@
                         <div  class="row" ng-repeat="rec in currentTasks[taskStatsId].records">
                             <div class="col-sm-2">{{currentTasks[taskStatsId].name}}</div>
                             <div class="col-sm-2">{{allUsers[rec.user].name}}</div>
-                            <div class="col-sm-2">{{formatDate(rec.startTime)}}</div>
-                            <div class="col-sm-2">{{formatDate(rec.endTime)}}</div>
+                            <div class="col-sm-2">{{rec.startTime}}</div>
+                            <div class="col-sm-2">{{rec.endTime}}</div>
                             <div class="col-sm-2">{{secToHours(rec.totalSeconds)}} hours</div>
                         </div>
                     </div>

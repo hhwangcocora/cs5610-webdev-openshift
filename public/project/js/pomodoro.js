@@ -1,7 +1,7 @@
 
 var app = angular.module('timerApp', ['ngRoute', 'ngAnimate'])
 
-app.controller('navController', function ($scope, $location, httpService){
+app.controller('navController', function ($scope, $location, $rootScope, httpService){
     var controller = this
 
     /* Watched variables */
@@ -22,6 +22,14 @@ app.controller('navController', function ($scope, $location, httpService){
         } else {
             $('#messageModal').modal({show: false})
         }
+    })
+
+    $scope.$on('startTimerEvent', function(event, project, task) {
+        // get event from project page, switch to timer page and send event to the timer controller
+        $location.path('/timer')
+        console.log('project:' + project + ', task: ' + task)
+        $rootScope.project = project
+        $rootScope.task = task
     })
 
 

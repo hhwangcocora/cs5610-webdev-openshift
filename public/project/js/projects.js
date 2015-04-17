@@ -2,7 +2,7 @@
  * Created by hhwang on 4/13/15.
  * This is the projects page
  */
-app.controller('projectsController', function($scope, httpService) {
+app.controller('projectsController', function($scope, $location, httpService) {
     var controller = this
 
     /* Load project lists */
@@ -201,6 +201,7 @@ app.controller('projectsController', function($scope, httpService) {
 
     $scope.startTimer = function(tid) {
         console.log('start timer')
+        $scope.$emit('startTimerEvent', $scope.showedProjectId, tid)
     }
 
     $scope.showStats = function(tid) {

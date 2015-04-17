@@ -2,27 +2,61 @@
  * Created by hhwang on 3/8/15.
  */
 
-app.controller('timerController', function($scope, httpService) {
+app.controller('timerController', function($scope, $rootScope, httpService) {
     var controller = this
 
     this.currentStatus = 'init' //init, ready, inProgress, pause
 
     /* TAG */
 
-    this.tags = []
+    $scope.tags = []
 
-    //httpService.getTags().then(  // initiliaze tags
-    //    function(rep) {
-    //        controller.tags = rep
-    //    }
-    //)
+    $scope.loadTagAsArgs = function() {
+        console.log('rootScope.project: ' + $rootScope.project)
+        console.log('rootScope.task: ' + $rootScope.task)
+        if ($rootScope.project >= 0 && $rootScope.task >= 0) {
+            var project = $rootScope.project
+            var task = $rootScope.task
+            // loop through the tag
+            for (var idx in $scope.tags) {
+                if ($scope.tags[idx].id == project) {
+                    for (var idx2 in $scope.tags[idx].subTags) {
+                        if ($scope.tags[idx].subTags[idx2].id == task) {
+                            $scope.activatedTag = $scope.tags[idx]
+                            $scope.activatedSubTag = $scope.tags[idx].subTags[idx2]
+                            controller.currentStatus = 'ready'
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        // clear root scope
+        $rootScope.project = undefined
+        $rootScope.task = undefined
+    }
 
-    this.activatedTag = ''
-    this.activatedSubTag = ''
+    $scope.initTags = function() {
+        // Initialize tags
+        httpService.getTags().then(
+            function (resp) {
+                $scope.tags = resp
+                $scope.loadTagAsArgs()
+            }
+        )
+    }
 
 
-    this.isTagActivated = function(tn, level) {
-        if ((tn == this.activatedTag.tagName && level == '1' ) || (level == '2' && tn == this.activatedSubTag)) {
+    $scope.activatedTag = '' // tag object
+    $scope.activatedSubTag = '' // sub tag object
+    $scope.initTags()
+    //$scope.loadTagAsArgs()
+
+
+
+    this.isTagActivated = function(tag, level) {
+        if ((tag == $scope.activatedTag && level == '1' ) || (level == '2' && tag == $scope.activatedSubTag)) {
             return true
         } else {
             return false
@@ -30,114 +64,117 @@ app.controller('timerController', function($scope, httpService) {
     }
 
     this.chooseL1Tag = function(chosenTag) {
+        console.log(chosenTag)
         if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
             return;
         }
-        if (chosenTag == this.activatedTag) {
-            this.activatedTag = ''
+        if (chosenTag == $scope.activatedTag) {
+            $scope.activatedTag = ''
             this.currentStatus = 'init'
         } else {
-            this.activatedTag = chosenTag
+            console.log('set activatedTag')
+            $scope.activatedTag = chosenTag
         }
 
-        this.activatedSubTag = ''
+        $scope.activatedSubTag = ''
         this.currentStatus = 'init'
     }
 
     this.chooseL2Tag = function(chosenSubTag) {
+        console.log(chosenSubTag)
         if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
             return;
         }
-        if (this.activatedSubTag == chosenSubTag) {
-            this.activatedSubTag = ''
+        if ($scope.activatedSubTag == chosenSubTag) {
+            $scope.activatedSubTag = ''
             this.currentStatus = 'init'
         } else {
-            this.activatedSubTag = chosenSubTag;
+            $scope.activatedSubTag = chosenSubTag;
             this.currentStatus = 'ready'
         }
     }
 
-    this.addL1Tag = function() {
-        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
-            return;
-        }
-        if (this.newL1Tag) {
-            for (idx in this.tags) {
-                if (this.tags[idx].tagName == this.newL1Tag) {
-                    this.newL1Tag = ''
-                    return
-                }
-            }
-            this.tags.push({tagName: this.newL1Tag, subTags: []})
-            updateTag()
-            this.newL1Tag = ''
-        }
-    }
+    //this.addL1Tag = function() {
+    //    if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+    //        return;
+    //    }
+    //    if (this.newL1Tag) {
+    //        for (idx in this.tags) {
+    //            if (this.tags[idx].tagName == this.newL1Tag) {
+    //                this.newL1Tag = ''
+    //                return
+    //            }
+    //        }
+    //        this.tags.push({tagName: this.newL1Tag, subTags: []})
+    //        updateTag()
+    //        this.newL1Tag = ''
+    //    }
+    //}
+    //
+    //this.addL2Tag = function() {
+    //    if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+    //        return;
+    //    }
+    //    if (this.newL2Tag) {
+    //        for (idx in this.tags) {
+    //            if (this.tags[idx].tagName == this.activatedTag.tagName) {
+    //                for (idx2 in this.tags[idx].subTags) {
+    //                    if (this.tags[idx].subTags[idx2].tagName == this.newL2Tag) {
+    //                        this.newL2Tag = ''
+    //                        return
+    //                    }
+    //                }
+    //                this.tags[idx].subTags.push(this.newL2Tag)
+    //                updateTag()
+    //                this.newL2Tag = ''
+    //            }
+    //        }
+    //    }
+    //}
+    //
+    //this.removeL1Tag = function(tag) {
+    //    if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+    //        return;
+    //    }
+    //    for (idx in this.tags) {
+    //        if (this.tags[idx].tagName == tag.tagName) {
+    //            this.tags.splice(idx, 1)
+    //            updateTag()
+    //            if (this.activatedTag.tagName == tag.tagName) {
+    //                this.activatedTag = ''
+    //                this.currentStatus = 'init'
+    //            }
+    //            break
+    //        }
+    //    }
+    //}
+    //
+    //this.removeL2Tag = function(tag) {
+    //    if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
+    //        return;
+    //    }
+    //    for (idx in this.tags) {
+    //        if (this.tags[idx].tagName == this.activatedTag.tagName) {
+    //            for (idx2 in this.tags[idx].subTags) {
+    //                if (this.tags[idx].subTags[idx2] == tag) {
+    //                    this.tags[idx].subTags.splice(idx2, 1)
+    //                    updateTag()
+    //                    if (this.activatedSubTag == tag) {
+    //                        this.activatedSubTag = ''
+    //                        this.currentStatus = 'init'
+    //                    }
+    //                    break
+    //                }
+    //            }
+    //            break
+    //        }
+    //    }
+    //}
 
-    this.addL2Tag = function() {
-        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
-            return;
-        }
-        if (this.newL2Tag) {
-            for (idx in this.tags) {
-                if (this.tags[idx].tagName == this.activatedTag.tagName) {
-                    for (idx2 in this.tags[idx].subTags) {
-                        if (this.tags[idx].subTags[idx2] == this.newL2Tag) {
-                            this.newL2Tag = ''
-                            return
-                        }
-                    }
-                    this.tags[idx].subTags.push(this.newL2Tag)
-                    updateTag()
-                    this.newL2Tag = ''
-                }
-            }
-        }
-    }
-
-    this.removeL1Tag = function(tag) {
-        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
-            return;
-        }
-        for (idx in this.tags) {
-            if (this.tags[idx].tagName == tag.tagName) {
-                this.tags.splice(idx, 1)
-                updateTag()
-                if (this.activatedTag.tagName == tag.tagName) {
-                    this.activatedTag = ''
-                    this.currentStatus = 'init'
-                }
-                break
-            }
-        }
-    }
-
-    this.removeL2Tag = function(tag) {
-        if (this.currentStatus == 'inProgress' || this.currentStatus == 'pause') {
-            return;
-        }
-        for (idx in this.tags) {
-            if (this.tags[idx].tagName == this.activatedTag.tagName) {
-                for (idx2 in this.tags[idx].subTags) {
-                    if (this.tags[idx].subTags[idx2] == tag) {
-                        this.tags[idx].subTags.splice(idx2, 1)
-                        updateTag()
-                        if (this.activatedSubTag == tag) {
-                            this.activatedSubTag = ''
-                            this.currentStatus = 'init'
-                        }
-                        break
-                    }
-                }
-                break
-            }
-        }
-    }
-
-    var updateTag = function() {
-        httpService.updateTags(controller.tags).then(function(res) {
-        })
-    }
+    //var updateTag = function() {
+    //    httpService.updateTags(controller.tags).then(function(res) {
+    //    })
+    //}
 
     /* TIMER */
 
@@ -203,19 +240,24 @@ app.controller('timerController', function($scope, httpService) {
         this.inProgressTask['stopTime'] = new Date()
 
         var finishedTask = {
-            l1Tag: this.activatedTag.tagName,
-            l2Tag: this.activatedSubTag,
-            startTime: this.inProgressTask['startTime'],
-            stopTime: this.inProgressTask['stopTime'],
-            duration: formatTimer(this.inProgressTask['totalSeconds']),
+            projectname: $scope.activatedTag.tagName,
+            taskname: $scope.activatedSubTag.tagName,
+            startTime: this.dateFormat(this.inProgressTask['startTime']),
+            stopTime: this.dateFormat(this.inProgressTask['stopTime']),
             totalSeconds: this.inProgressTask['totalSeconds']
         }
-        //this.recentTasks.push(finishedTask)
+        var record = {
+            task: $scope.activatedSubTag.id,
+            startTime: this.dateFormat(this.inProgressTask['startTime']),
+            stopTime: this.dateFormat(this.inProgressTask['stopTime']),
+            totalSeconds: this.inProgressTask['totalSeconds']
+        }
+        this.recentTasks.push(finishedTask)
         this.counter = formatTimer(0)
-        this.activatedTag = ''
-        this.activatedSubTag = ''
-        httpService.addTask(finishedTask).then(function(resp) {
-            controller.recentTasks.push(resp)
+        $scope.activatedTag = ''
+        $scope.activatedSubTag = ''
+        httpService.addNewRecord(record).then(function(resp) {
+
         }, function(resp) {
             $scope.errorMessage = 'Failed to save task to server. '
         })
@@ -223,4 +265,10 @@ app.controller('timerController', function($scope, httpService) {
 
     /* TASK TABLE */
     this.recentTasks = []
+
+    this.formatDate = function(date) {
+        console.log(date)
+        return '' + (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
+            + ' ' + date.getHours() + ':' + date.getMinutes()
+    }
 })

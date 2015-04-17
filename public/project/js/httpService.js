@@ -118,6 +118,10 @@ app.factory('httpService', function($http, $q){
         return postRequest(rootpath + '/tasks/addRecord', record)
     }
 
+    var getTags = function() {
+        return getRequest(rootpath + '/tasks/tags')
+    }
+
     return { // Expose the services
         rootPath: rootpath,
         login: login,
@@ -136,7 +140,9 @@ app.factory('httpService', function($http, $q){
         ownTask: ownTask,
         dropTask: dropTask,
         completeTask: completeTask,
-        addNewRecord: addNewRecord
+        addNewRecord: addNewRecord,
+
+        getTags: getTags
 
     }
 })

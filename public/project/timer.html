@@ -1,28 +1,17 @@
-<div class="container" ng-controller="timerController as timerCtrl">
+<div class="container">
 
     <!-- Level 1 category -->
     <div class="row">
         <div class="content-padding-10px">
             <div class="col-sm-10, task-tag-list">
                 <ul>
-                    <li ng-repeat="tag in timerCtrl.tags" class="timer-tag show-animation">
+                    <li ng-repeat="tag in tags" class="timer-tag show-animation">
                         <a ng-click="timerCtrl.chooseL1Tag(tag)"
-                           ng-class="timerCtrl.isTagActivated(tag.tagName, '1') ? 'task-tag-activated' : 'task-tag-unactivated'">
+                           ng-class="timerCtrl.isTagActivated(tag, '1') ? 'task-tag-activated' : 'task-tag-unactivated'">
                             {{tag.tagName}}
-                            <a ng-click="timerCtrl.removeL1Tag(tag)"
-                               ng-class="timerCtrl.isTagActivated(tag.tagName, '1') ? 'task-tag-activated' : 'task-tag-unactivated'">x</a>
                         </a>
                     </li>
-                    <li class="timer-tag show-animation" >
-                        <form class="form-inline">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Add tag"  ng-model="timerCtrl.newL1Tag">
-                                </div>
-                            </div>
-                            <button type="button" class="btn" ng-click="timerCtrl.addL1Tag()">+</button>
-                        </form>
-                    </li>
+
                 </ul>
             </div>
         </div>
@@ -31,26 +20,15 @@
     <!-- Level 2 category  -->
     <div class="row">
         <div class="content-padding-10px">
-            <div class="col-sm-10 task-tag-list" ng-show="timerCtrl.activatedTag">
+            <div class="col-sm-10 task-tag-list" ng-show="activatedTag">
                 <ul>
-                    <li ng-repeat="subTag in timerCtrl.activatedTag.subTags" class="timer-tag show-animation" >
+                    <li ng-repeat="subTag in activatedTag.subTags" class="timer-tag show-animation" >
                         <a ng-click="timerCtrl.chooseL2Tag(subTag)"
                            ng-class="timerCtrl.isTagActivated(subTag, '2') ? 'task-tag-activated' : 'task-tag-unactivated'">
-                            {{subTag}}
-                            <a ng-click="timerCtrl.removeL2Tag(subTag)"
-                               ng-class="timerCtrl.isTagActivated(subTag, '2') ? 'task-tag-activated' : 'task-tag-unactivated'">x</a>
+                            {{subTag.tagName}}
                         </a>
                     </li>
-                    <li class="timer-tag ">
-                        <form class="form-inline">
-                            <div class="form-group">
-                                <div class="input-group col-sm-6">
-                                    <input type="text" class="form-control" placeholder="Add tag" ng-model="timerCtrl.newL2Tag">
-                                </div>
-                                <button type="button" class="btn" ng-click="timerCtrl.addL2Tag()">+</button>
-                            </div>
-                        </form>
-                    </li>
+
                 </ul>
             </div>
         </div>
@@ -72,25 +50,26 @@
     </div>
 
     <!-- Recent finished tasks -->
-    <h3>Recent activities <small><a href="#/dashboard">Go to dashboard</a></small></h3>
+    <h3>Recent activities <small></small></h3>
     <div class="row">
         <table class="table table-hover table-striped">
             <thead>
             <tr>
+                <th>Project</th>
+                <th>Task</th>
                 <th>Start Time</th>
                 <th>Stop Time</th>
-                <th>Duration</th>
-                <th>Category</th>
-                <th>Sub-category</th>
+                <th>Hours</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="task in timerCtrl.recentTasks">
-                <td>{{task.startTime.toString()}}</td>
-                <td>{{task.stopTime.toString()}}</td>
-                <td>{{task.duration.hours | fixedTowLen}}:{{task.duration.minutes | fixedTowLen}}:{{task.duration.seconds | fixedTowLen}}</td>
-                <td>{{task.l1Tag}}</td>
-                <td>{{task.l2Tag}}</td>
+                <td>{{task.projectname}}</td>
+                <td>{{task.taskname}}</td>
+                <td>{{formatDate(task.startTime)}}</td>
+                <td>{{formatDate(task.stopTime)}}</td>
+                <td>{{secToHours(task.totalSeconds)}} hours</td>
+
             </tr>
             </tbody>
         </table>

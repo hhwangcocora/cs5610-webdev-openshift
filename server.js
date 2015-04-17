@@ -254,6 +254,17 @@ app.post(rootpath + '/tasks/addRecord', auth.auth, function(req, res) {
     })
 })
 
+// ok
+app.get(rootpath + '/tasks/tags', auth.auth, function(req, res) {
+    console.log('/tasks/tags')
+    printRequest(req)
+    db.getTagList(req.user.id, function(tagList) {
+        res.json(tagList)
+    }, function(err) {
+        res.json({message: err})
+    })
+})
+
 /* START LISTENING ON THE PORT */
 
 var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'

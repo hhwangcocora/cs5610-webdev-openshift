@@ -48,7 +48,7 @@ var init = function(mongoose) {
         name: String,
         description: String,
         project: Number,
-        records: [{user: Number, startTime: Date, endTime: Date, totalSeconds: Number}],
+        records: [{user: Number, startTime: String, endTime: String, totalSeconds: Number}],
         owner: Number,
         totalSeconds: Number,
         completed: Boolean
@@ -410,17 +410,15 @@ var addNewTask = function(tname, description, project, successHandler, errorHand
 }
 
 var addNewRecord = function(tid, user, startTime, endTime, totalSeconds, successHandler, errorHandler) {
-    Task.update({id: tid},
-        {$push: {user: user, startTime: startTime, endTime: endTime, totalSeconds: totalSeconds}},
-        {upsert: true},
-        function(err, task) {
-            if (task) {
-                task.totalSeconds += totalSeconds
-                task.save()
-                successHandler(task)
-            } else {
-                errorHandler(err)
-            }
+    getTaskById(tid, function(task) {
+        task.records.push({user: user, startTime: startTime, endTime: endTime, totalSeconds: totalSeconds})
+        task.totalSeconds += totalSeconds
+        console.log('after adding record: ')
+        console.log(task.records)
+        task.save()
+        successHandler(task)
+    }, function(err) {
+        errorHandler(err)
     })
 }
 
@@ -454,6 +452,33 @@ var completeTask = function(taskid, successHandler, errorHandler) {
     })
 }
 
+var getTagList = function(userid, successHandler, errorHandler) {
+    var result = []
+    Project.find({contributors: {'$in' : [userid]}}, function(err, projects) {
+        if (err) {
+            errorHandler({message: err})
+        } else {
+            projects.forEach(function(project) {
+                result.push({id: project.id, tagName: project.name, subTags: []})
+            })
+            Task.find({owner: userid}, function(err, tasks) {
+                if (err) {
+                    errorHandler(err)
+                } else {
+                    tasks.forEach(function(task) {
+                        for (var i = 0; i < result.length; i++) {
+                            if (result[i].id == task.project) {
+                                result[i].subTags.push({id: task.id, tagName: task.name})
+                            }
+                        }
+                    })
+                    successHandler(result)
+                }
+            })
+        }
+    })
+}
+
 module.exports = function(mongoose) {
     init(mongoose)
     return {
@@ -479,6 +504,8 @@ module.exports = function(mongoose) {
         addNewRecord: addNewRecord,
         ownTask: ownTask,
         dropTask: dropTask,
-        completeTask: completeTask
+        completeTask: completeTask,
+
+        getTagList: getTagList
     }
 }
