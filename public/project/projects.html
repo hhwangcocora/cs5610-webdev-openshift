@@ -4,7 +4,7 @@
     <div ng-hide="showDetailPage()">
 
         <!-- Projects joined by current user -->
-        <div>
+        <div ng-show="currentUser">
             <h2 class="styled"><span class="glyphicon glyphicon-tag"></span> Projects I'm Working On</h2>
 
             <div class="row">
@@ -33,7 +33,7 @@
                         <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
                         </td>
                         <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Tasks Page</button></span></td>
-                        <td><span><button class="btn btn-warning" type="button" ng-click="dropProject(pid)">Drop
+                        <td><span><button class="btn btn-warning" type="button" ng-click="dropProject(pid)">Un-join
                         </button></span></td>
                     </tr>
 
@@ -41,7 +41,7 @@
             </div>
         </div>
         <!-- Projects owned by current user -->
-        <div>
+        <div ng-show="false">
             <h2 class="styled"><span class="glyphicon glyphicon-asterisk"></span> Projects Created By Me</h2>
 
             <div class="row">
@@ -116,11 +116,11 @@
                         </td>
                         <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Tasks Page</button></span>
                         </td>
-                        <td ng-show="isContributor(allProjects[pid].id)"><span><button class="btn btn-warning"
+                        <td ng-show="currentUser && isContributor(allProjects[pid].id)"><span><button class="btn btn-warning"
                                                                                        type="button"
-                                                                                       ng-click="dropProject(pid)">Drop
+                                                                                       ng-click="dropProject(pid)">Un-join
                         </button></span></td>
-                        <td ng-hide="isContributor(allProjects[pid].id)"><span><button class="btn btn-primary"
+                        <td ng-hide="!currentUser || isContributor(allProjects[pid].id)"><span><button class="btn btn-primary"
                                                                                        type="button"
                                                                                        ng-click="joinProject(pid)">Join
                         </button></span></td>
@@ -131,7 +131,7 @@
         </div>
 
         <!-- Add a new project -->
-        <div class="margin-bottom">
+        <div class="margin-bottom" ng-show="currentUser">
             <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Create a New Project </h2>
 
             <div class="row">
@@ -187,7 +187,7 @@
             <p class="bg-success">" {{allProjects[showedProjectId].description}} "</p>
         </div>
 
-        <div class="row" ng-hide="projectOwnedByUser()">
+        <div class="row" ng-hide="!currentUser || projectOwnedByUser()">
             <button class="btn btn-primary" type="button" ng-click="joinProject(showedProjectId)">Join This Project</button>
         </div>
 
@@ -200,7 +200,7 @@
             </ul>
         </div>
 
-        <div class="row" ng-show="projectOwnedByUser()">
+        <div class="row" ng-show="currentUser && projectOwnedByUser()">
             <h2 class="styled"><span class="glyphicon glyphicon-star"></span> My tasks</h2>
             <div class="row">
                 <table class="table table-hover table-striped">
@@ -224,12 +224,13 @@
                         <td class="conditional-display-600">{{secToHours(currentTasks[tid].totalSeconds)}}</td>
                         <td class="conditional-display-600">{{currentTasks[tid].completed ? 'YES' : 'NO'}}</td>
 
+                        <!-- Button trigger modal -->
+                        <td><button type="button" class="btn btn-default" ng-click="showStats(tid)">Stats</button></td>
+
                         <td><button class="btn btn-danger" ng-click="dropTask(tid)">Un-own</button></td>
                         <td><button class="btn btn-success" ng-click="startTimer(tid)"  ng-disabled="currentTasks[tid].completed"><span class="conditional-display-600">Start</span> <span class="glyphicon glyphicon-time"></span> </button></td>
                         <td><button class="btn btn-warning" ng-click="completeTask(tid)" ng-disabled="currentTasks[tid].completed">Finish</button>
                         </td>
-                        <!-- Button trigger modal -->
-                        <td><button type="button" class="btn btn-default" ng-click="showStats(tid)">Stats</button></td>
                     </tr>
                     </tbody>
                 </table>
@@ -268,15 +269,16 @@
                         <td>{{allUsers[currentTasks[tid].owner].username}}</td>
                         <td class="conditional-display-600">{{secToHours(currentTasks[tid].totalSeconds)}}</td>
                         <td>{{currentTasks[tid].completed ? 'YES' : 'NO'}}</td>
-                        <td ng-show="ownProject()"><button class="btn btn-success" ng-click="projectOwnedByUser()">Own</button></td>
                         <!-- Button trigger modal -->
                         <td><button type="button" class="btn btn-default" ng-click="showStats(tid)">Stats</button></td>
+                        <td ng-show="currentUser && !currentTasks[tid].owner"><button class="btn btn-success" ng-click="ownTask(tid)">Own</button></td>
+
                     </tr>
                 </table>
             </div>
         </div>
 
-        <div class="margin-bottom" ng-show="projectOwnedByUser()">
+        <div class="margin-bottom" ng-show="currentUser && projectOwnedByUser()">
             <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Add Task </h2>
 
             <div class="row">

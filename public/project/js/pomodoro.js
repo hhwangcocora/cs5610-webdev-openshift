@@ -37,7 +37,7 @@ app.controller('navController', function ($scope, $location, $rootScope, httpSer
 
     // If current tab is active, controls the "active" ng-class
     $scope.isActive = function(route) {
-        return route == $location.path()
+        return $location.path().indexOf(route) == 0
     }
 
 

@@ -115,7 +115,7 @@ app.post(rootpath + '/userAccount/update', function(req, res) {
     })
 })
 // ok
-app.get(rootpath + '/users/', auth.auth, function(req, res) {
+app.get(rootpath + '/users/', function(req, res) {
     // User can query all other users' account info
     // don't leak sensative info here
     printRequest(req)
@@ -129,7 +129,7 @@ app.get(rootpath + '/users/', auth.auth, function(req, res) {
 /* projects */
 
 // ok  (filters are not tested)
-app.get(rootpath + '/projects/', auth.auth, function(req, res) {
+app.get(rootpath + '/projects/', function(req, res) {
     // owner = userid, contributor = userid
     console.log('/projects/')
     printRequest(req)
@@ -201,7 +201,7 @@ app.post(rootpath + '/projects/join', auth.auth, function(req, res) {
 
 /* Task */
 
-app.get(rootpath + '/tasks', auth.auth, function(req, res) {
+app.get(rootpath + '/tasks', function(req, res) {
     console.log('/tasks/')
     printRequest(req)
     var projectid = req.query.projectid

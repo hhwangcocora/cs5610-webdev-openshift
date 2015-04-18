@@ -43,7 +43,9 @@ app.controller('projectsController', function($scope, $location, httpService) {
             if (resp) {
                 $scope.allUsers = resp
                 $scope.allUserIds = controller.getAllUserIds()
-                $scope.currentUser = $scope.allUsers[$scope.currentUserId]
+                if ($scope.currentUserId) {
+                    $scope.currentUser = $scope.allUsers[$scope.currentUserId]
+                }
             } else {
                 console.log('getUserList failed')
                 $scope.allUsers = {}
@@ -72,7 +74,7 @@ app.controller('projectsController', function($scope, $location, httpService) {
         return result
     }
 
-    $scope.currentUserId = $scope.currentUser ? $scope.currentUser.id : 0   // need to deal with no user login
+    $scope.currentUserId = $scope.currentUser ? $scope.currentUser.id : null   // need to deal with no user login
     $scope.showedProjectId = null
     $scope.showedRecords = {}  // task id -> [work record ids]
     $scope.allProjectIds = []

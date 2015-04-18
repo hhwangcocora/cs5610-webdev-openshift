@@ -32,7 +32,7 @@ app.controller('usersController', function($scope, $routeParams, httpService) {
 
 
     this.getDisplayPic = function(userid) {
-        if ($scope.allUsers[userid].picUrl && $scope.allUsers[userid].picUrl.length > 0) {
+        if ($scope.allUsers && $scope.allUsers[userid].picUrl && $scope.allUsers[userid].picUrl.length > 0) {
             return $scope.allUsers[userid].picUrl
         } else {
             return '../img/default-profile-pic.png'
