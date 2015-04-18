@@ -61,9 +61,14 @@ app.factory('httpService', function($http, $q){
 
     /* User */
 
+    var updateUser = function(user) {
+        return postRequest(rootpath + '/userAccount/update', user)
+    }
+
     var getUserList = function() {
         return getRequest(rootpath + '/users/')
     }
+
 
     /* Projects */
 
@@ -128,6 +133,7 @@ app.factory('httpService', function($http, $q){
         loggedin: loggedin,
         logout: logout,
         register: register,
+        updateUser: updateUser,
         getUserList: getUserList,
 
         getProjectList: getProjectList,

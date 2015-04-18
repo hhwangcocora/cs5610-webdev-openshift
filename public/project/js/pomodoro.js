@@ -201,10 +201,10 @@ app.config(['$routeProvider',
                     controller: 'timerController',
                     controllerAs: 'timerCtrl'
                 }).
-                when(rootPath + '/updates', {
-                    templateUrl: 'updates.html',
-                    controller: 'updatesController',
-                    controllerAs: 'updatesCtrl'
+                when(rootPath + '/users/:id', {
+                    templateUrl: 'users.html',
+                    controller: 'usersController',
+                    controllerAs: 'usersCtrl'
                 }).
                 when(rootPath + '/profile', {
                     templateUrl: 'profile.html',

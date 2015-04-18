@@ -1,0 +1,48 @@
+<div class="container">
+
+    <!-- Show specified user if any -->
+    <div ng-show="userid">
+
+        <div>
+            <div class="row">
+                <img ng-src="{{usersCtrl.getDisplayPic(userid)}}" class="large-icon">
+            </div>
+            <div class="row">
+                <h2>{{allUsers[userid].username}}</h2>
+                <strong>{{allUsers[userid].firstName}} {{allUsers[userid].lastName}}</strong>
+
+                <p>Email: {{allUsers[userid].email}} </p>
+                <p>Gender: {{allUsers[userid].gender}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Show all users -->
+    <div>
+        <h2 class="styled"><span class="glyphicon glyphicon-user"></span> All Users</h2>
+        <div class="row">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>User Name</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+
+                </tr>
+                </thead>
+                <tr ng-repeat="id in allUserIds">
+                    <td><img class="small-icon" ng-src="{{usersCtrl.getDisplayPic(id)}}"></td>
+                    <td>{{allUsers[id].username}}</td>
+                    <td>{{allUsers[id].firstName}} {{allUsers[id].lastName}}</td>
+                    <td>{{allUsers[id].email}}</td>
+                    <td>{{allUsers[id].gender}}</td>
+
+                </tr>
+
+            </table>
+        </div>
+    </div>
+
+</div>

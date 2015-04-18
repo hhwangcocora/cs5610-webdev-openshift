@@ -105,6 +105,14 @@ body {
     height: 100px;
 }
 
+.large-icon {
+    border-radius: 10px;
+    background: #8AC007;
+    padding: 5px;
+    width: 150px;
+    height: 150px;
+}
+
 table span {
     font-size: 1.1em;
     font-family: Arial;
@@ -115,6 +123,11 @@ table span {
     color: #ffffff;
     background-color: lightsteelblue;
     padding: 2px 5px 2px 5px;
+}
+
+.text-warning {
+    color: red;
+    border: lightgrey solid 1px;
 }
 
 div.margin-bottom {

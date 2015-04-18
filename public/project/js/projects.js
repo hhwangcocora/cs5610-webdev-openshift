@@ -67,7 +67,7 @@ app.controller('projectsController', function($scope, $location, httpService) {
     controller.getAllUserIds = function() {
         var result = []
         for (var u in $scope.allUsers) {
-            result.push[u]
+            result.push(u)
         }
         return result
     }
@@ -84,6 +84,8 @@ app.controller('projectsController', function($scope, $location, httpService) {
     $scope.currentTasks = {}
     $scope.allTasks = []
     $scope.ownedTasks = []
+    $scope.newProject = {name: '', description: '', picUrl: ''}
+    $scope.newTask = {name: '', description: ''}
 
 
     // Is current user a contributor of the project
@@ -106,8 +108,16 @@ app.controller('projectsController', function($scope, $location, httpService) {
 
 
     $scope.addNewProject = function(newProject) {
+        if (newProject.name.length == 0 || newProject.description == 0) {
+            return;
+        }
         httpService.addProject(newProject).then(function(resp) {
             controller.loadData()
+            $scope.newProject = {
+                name: '',
+                description: '',
+                picUrl: ''
+            }
         }, function(resp) {
             $scope.errorMessage = resp.message
         })
@@ -163,6 +173,9 @@ app.controller('projectsController', function($scope, $location, httpService) {
     }
 
     $scope.addNewTask = function(newTask) {
+        if (newTask.name.length == 0 || newTask.description.length == 0) {
+            return
+        }
         var t = {
             name: newTask.name,
             description: newTask.description,
@@ -170,9 +183,15 @@ app.controller('projectsController', function($scope, $location, httpService) {
         }
         httpService.addTask(t).then(function(resp) {
             $scope.showProjectDetails($scope.showedProjectId)
+
+            $scope.newTask = {
+                name: '',
+                description: ''
+            }
         }, function(resp) {
             $scope.errorMessage = resp.message
         })
+
     }
 
     $scope.ownTask = function(tid) {
@@ -181,6 +200,15 @@ app.controller('projectsController', function($scope, $location, httpService) {
         }, function(resp) {
             $scope.errorMessage = resp.message
         })
+    }
+
+    $scope.notOwnable = function(tid) {
+        return ($scope.currentTasks[tid].owner != null && $scope.currentTasks[tid].owner.length > 0)
+        || ($scope.currentUser.contributedProjects.indexOf($scope.showedProjectId) < 0)
+    }
+
+    $scope.projectOwnedByUser = function() {
+        return ($scope.currentUser.contributedProjects.indexOf($scope.showedProjectId) >= 0)
     }
 
     $scope.dropTask = function(tid) {

@@ -2,9 +2,47 @@
 
     <!-- Show Project page -->
     <div ng-hide="showDetailPage()">
+
+        <!-- Projects joined by current user -->
+        <div>
+            <h2 class="styled"><span class="glyphicon glyphicon-tag"></span> Projects I'm Working On</h2>
+
+            <div class="row">
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Project</th>
+                        <th>Owner</th>
+                        <th class="conditional-display-600">Description</th>
+                        <th class="conditional-display-900">#Contributors</th>
+                        <th class="conditional-display-900">#Tasks</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tr ng-repeat="pid in currentUser.contributedProjects">
+                        <td><img class="small-icon" ng-src="{{allProjects[pid].picUrl}}"></td>
+                        <td><span> {{allProjects[pid].name}}</span></td>
+                        <td><span><a ng-href="#/users/{{allUsers[allProjects[pid].owner].id}}">{{allUsers[allProjects[pid].owner].username}}</a></span>
+                        </td>
+                        <td class="conditional-display-600"><span>{{allProjects[pid].description}}</span></td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].contributors.length}}</button></span>
+                        </td>
+                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
+                        </td>
+                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Tasks Page</button></span></td>
+                        <td><span><button class="btn btn-warning" type="button" ng-click="dropProject(pid)">Drop
+                        </button></span></td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
         <!-- Projects owned by current user -->
         <div>
-            <h2 class="styled"><span class="glyphicon glyphicon-asterisk"></span> Owned Projects </h2>
+            <h2 class="styled"><span class="glyphicon glyphicon-asterisk"></span> Projects Created By Me</h2>
 
             <div class="row">
 
@@ -27,45 +65,7 @@
                         </td>
                         <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
                         </td>
-                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Details</button></span></td>
-                    </tr>
-
-                </table>
-            </div>
-        </div>
-
-        <!-- Projects joined by current user -->
-        <div>
-            <h2 class="styled"><span class="glyphicon glyphicon-tag"></span> Joined Projects </h2>
-
-            <div class="row">
-
-                <table class="table table-hover table-striped">
-                    <thead>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th>Project</th>
-                        <th>Owner</th>
-                        <th class="conditional-display-600">Description</th>
-                        <th class="conditional-display-900">#Contributors</th>
-                        <th class="conditional-display-900">#Tasks</th>
-                        <th>&nbsp;</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    </thead>
-                    <tr ng-repeat="pid in currentUser.contributedProjects">
-                        <td><img class="small-icon" ng-src="{{allProjects[pid].picUrl}}"></td>
-                        <td><span> {{allProjects[pid].name}}</span></td>
-                        <td><span><a ng-href="#/user:{{allUsers[allProjects[pid].owner].id}}">{{allUsers[allProjects[pid].owner].username}}</a></span>
-                        </td>
-                        <td class="conditional-display-600"><span>{{allProjects[pid].description}}</span></td>
-                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].contributors.length}}</button></span>
-                        </td>
-                        <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
-                        </td>
-                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Details</button></span></td>
-                        <td><span><button class="btn btn-warning" type="button" ng-click="dropProject(pid)">Drop
-                        </button></span></td>
+                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Tasks Page</button></span></td>
                     </tr>
 
                 </table>
@@ -107,14 +107,14 @@
                     <tr ng-repeat="pid in allProjectIds | filter: projectFilter">
                         <td><img class="small-icon" ng-src="{{allProjects[pid].picUrl}}"></td>
                         <td><span> {{allProjects[pid].name}}</span></td>
-                        <td><span><a ng-href="#/user:{{allUsers[allProjects[pid].owner].id}}">{{allUsers[allProjects[pid].owner].username}}</a></span>
+                        <td><span><a ng-href="#/users/{{allUsers[allProjects[pid].owner].id}}">{{allUsers[allProjects[pid].owner].username}}</a></span>
                         </td>
                         <td class="conditional-display-600"><span>{{allProjects[pid].description}}</span></td>
                         <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].contributors.length}}</button></span>
                         </td>
                         <td class="conditional-display-900"><span><button class="btn btn-link" ng-click="showProjectDetails(pid)">{{allProjects[pid].tasks.length}}</button></span>
                         </td>
-                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Details</button></span>
+                        <td><span><button class="btn btn-success" ng-click="showProjectDetails(pid)">Tasks Page</button></span>
                         </td>
                         <td ng-show="isContributor(allProjects[pid].id)"><span><button class="btn btn-warning"
                                                                                        type="button"
@@ -132,7 +132,7 @@
 
         <!-- Add a new project -->
         <div class="margin-bottom">
-            <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Add Project </h2>
+            <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Create a New Project </h2>
 
             <div class="row">
                 <form class="form-horizontal">
@@ -140,14 +140,14 @@
                         <label for="name" class="col-sm-2 control-label">Name:</label>
 
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" ng-model="newProject.name" id="name">
+                            <input type="text" class="form-control" ng-model="newProject.name" id="name" placeholder="required">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="description" class="col-sm-2 control-label">Description:</label>
 
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" ng-model="newProject.description" id="description">
+                            <input type="text" class="form-control" ng-model="newProject.description" id="description" placeholder="required">
                         </div>
                     </div>
                     <div class="form-group">
@@ -171,7 +171,7 @@
 
     <div ng-show="showDetailPage()">
         <div class="row margin-bottom">
-            <button class="btn btn-success" ng-click="goBackToProjects()">
+            <button class="btn btn-success" ng-click="goBackToProjects()" type="button">
                 <span class="glyphicon glyphicon-arrow-left"></span> Go back to projects
             </button>
         </div>
@@ -180,22 +180,27 @@
         </div>
         <div class="row">
             <h4>{{allProjects[showedProjectId].name}}
-                <small>owned by <a href="#/user:{{allProjects[showedProjectId].owner}}">{{allUsers[allProjects[showedProjectId].owner].username}}</a></small>
+                <small>owned by <a href="#/users/{{allProjects[showedProjectId].owner}}">{{allUsers[allProjects[showedProjectId].owner].username}}</a></small>
             </h4>
         </div>
         <div class="row">
-            <p>" {{allProjects[showedProjectId].description}} "</p>
+            <p class="bg-success">" {{allProjects[showedProjectId].description}} "</p>
         </div>
+
+        <div class="row" ng-hide="projectOwnedByUser()">
+            <button class="btn btn-primary" type="button" ng-click="joinProject(showedProjectId)">Join This Project</button>
+        </div>
+
         <div class="row">
             <h2 class="styled"><span class="glyphicon glyphicon-user"></span> All contributors</h2>
             <ul class="list-inline">
                 <li ng-repeat="c in allProjects[showedProjectId].contributors">
-                    <a ng-href="#/user:{{c}}">{{allUsers[c].username}}</a>
+                    <a ng-href="#/users/{{c}}">{{allUsers[c].username}}</a>
                 </li>
             </ul>
         </div>
 
-        <div class="row">
+        <div class="row" ng-show="projectOwnedByUser()">
             <h2 class="styled"><span class="glyphicon glyphicon-star"></span> My tasks</h2>
             <div class="row">
                 <table class="table table-hover table-striped">
@@ -263,7 +268,7 @@
                         <td>{{allUsers[currentTasks[tid].owner].username}}</td>
                         <td class="conditional-display-600">{{secToHours(currentTasks[tid].totalSeconds)}}</td>
                         <td>{{currentTasks[tid].completed ? 'YES' : 'NO'}}</td>
-                        <td><button class="btn btn-success" ng-click="ownTask(tid)" ng-disabled="currentTasks[tid].owner != null">Own</button></td>
+                        <td ng-show="ownProject()"><button class="btn btn-success" ng-click="projectOwnedByUser()">Own</button></td>
                         <!-- Button trigger modal -->
                         <td><button type="button" class="btn btn-default" ng-click="showStats(tid)">Stats</button></td>
                     </tr>
@@ -271,7 +276,7 @@
             </div>
         </div>
 
-        <div class="margin-bottom">
+        <div class="margin-bottom" ng-show="projectOwnedByUser()">
             <h2 class="styled"><span class="glyphicon glyphicon-plus"></span> Add Task </h2>
 
             <div class="row">
@@ -280,14 +285,14 @@
                         <label for="tname" class="col-sm-2 control-label">Name:</label>
 
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" ng-model="newTask.name" id="tname">
+                            <input type="text" class="form-control" ng-model="newTask.name" id="tname" placeholder="required">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="tdescription" class="col-sm-2 control-label">Description:</label>
 
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" ng-model="newTask.description" id="tdescription">
+                            <input type="text" class="form-control" ng-model="newTask.description" id="tdescription" placeholder="required">
                         </div>
                     </div>
 

@@ -242,14 +242,14 @@ app.controller('timerController', function($scope, $rootScope, httpService) {
         var finishedTask = {
             projectname: $scope.activatedTag.tagName,
             taskname: $scope.activatedSubTag.tagName,
-            startTime: this.dateFormat(this.inProgressTask['startTime']),
-            stopTime: this.dateFormat(this.inProgressTask['stopTime']),
+            startTime: this.formatDate(this.inProgressTask['startTime']),
+            stopTime: this.formatDate(this.inProgressTask['stopTime']),
             totalSeconds: this.inProgressTask['totalSeconds']
         }
         var record = {
             task: $scope.activatedSubTag.id,
-            startTime: this.dateFormat(this.inProgressTask['startTime']),
-            stopTime: this.dateFormat(this.inProgressTask['stopTime']),
+            startTime: this.formatDate(this.inProgressTask['startTime']),
+            endTime: this.formatDate(this.inProgressTask['stopTime']),
             totalSeconds: this.inProgressTask['totalSeconds']
         }
         this.recentTasks.push(finishedTask)

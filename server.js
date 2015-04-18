@@ -79,7 +79,13 @@ app.post(rootpath + '/userAccount/logout', auth.auth, function(req, res) {
 app.get(rootpath + '/userAccount/loggedin', function(req, res) {
     console.log('/userAccount/loggedin')
     printRequest(req)
-    res.send(req.isAuthenticated() ? req.user : '0');
+    if (req.isAuthenticated()) {
+        db.getUserById(req.user.id, function(user) {
+            res.json(user)
+        }, function(err) {
+            res.json({message: err})
+        })
+    }
 })
 
 // ok
@@ -99,6 +105,15 @@ app.post(rootpath + '/userAccount/register', function(req, res) {
     })
 })
 
+app.post(rootpath + '/userAccount/update', function(req, res) {
+    console.log('/userAccount/update')
+    printRequest(req)
+    db.updateUser(req.user.id, req.body, function(updatedUser) {
+        res.json(updatedUser)
+    }, function(err) {
+        res.json({message: err})
+    })
+})
 // ok
 app.get(rootpath + '/users/', auth.auth, function(req, res) {
     // User can query all other users' account info
