@@ -56,6 +56,11 @@ var printRequest = function(req) {
     console.log(req.body)
 }
 
+// document
+app.get('/documents', function(req, res) {
+    res.sendfile(public_path + '/project/documents.html')
+})
+
 // ok
 app.post(rootpath + '/userAccount/login', passport.authenticate('local'), function(req, res) {
     console.log('/userAccount/login')

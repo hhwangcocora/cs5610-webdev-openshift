@@ -43,7 +43,7 @@ app.controller('projectsController', function($scope, $location, httpService) {
             if (resp) {
                 $scope.allUsers = resp
                 $scope.allUserIds = controller.getAllUserIds()
-                if ($scope.currentUserId) {
+                if ($scope.currentUserId != null) {
                     $scope.currentUser = $scope.allUsers[$scope.currentUserId]
                 }
             } else {
@@ -143,6 +143,7 @@ app.controller('projectsController', function($scope, $location, httpService) {
 
     $scope.showProjectDetails = function(pid) {
         // get task by project and then traverse them
+        console.log('show project details' + pid)
         httpService.getTaskByProject(pid).then(function(resp) {
             $scope.currentTasks = resp
             var temp1 = []
@@ -210,6 +211,7 @@ app.controller('projectsController', function($scope, $location, httpService) {
     }
 
     $scope.projectOwnedByUser = function() {
+        console.log(($scope.currentUser.contributedProjects.indexOf($scope.showedProjectId) >= 0))
         return ($scope.currentUser.contributedProjects.indexOf($scope.showedProjectId) >= 0)
     }
 

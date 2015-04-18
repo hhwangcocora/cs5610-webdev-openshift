@@ -2,22 +2,332 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Project Documents</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/pomodoro.css">
 </head>
 <body class="container">
-<div class="row">
-    <h2>Project Documentation</h2>
-    <p>In this project, I implemented a project time management web application. The website allows for user register/login,
-    add new project, add tasks to project, own/drop tasks, and start timer to record time spent on specific project.</p>
-    <h3>System Architecture</h3>
-    The
-    <h3>Technology</h3>
-    <p>Frontend: HTML/CSS, Bootstrap and AngulaJS</p>
-    <p>Backend: NodeJS, Express and Mongoose</p>
-    <p>Database: Mongo</p>
-    <p>Platform: Openshift</p>
+<h1>Project Documentation</h1>
+<nav class="nav">
+    <a href="#introduction" class="nav-tabs bg-success">Introduction</a> |
+    <a href="#architecture" class="nav-tabs bg-success">Design</a> |
+    <a href="#api" class="nav-tabs bg-success">API</a> |
+    <a href="#walkthrough" class="nav-tabs bg-success">Walk Through</a> |
+    <a href="#source" class="nav-tabs bg-success">Thanks</a> |
+    <a href="#references" class="nav-tabs bg-success">References</a>
+</nav>
+<div id="introduction">
+    <div class="row">
+        <h2 class="styled">Welcome to Pomodoro</h2>
+
+        <p>
+            Pomodoro is the website to manage projects and track time spent on each task of the project.
+            In this site, user is able to add new project, add new task, track time, view time statistics, etc.
+        </p>
+
+        <p>Following is a brief introduction about each pages:</p>
+        <h4>Navigation</h4>
+        <p>Navigation sits on top of the page, and provides user the functions to login/logout, and register as
+        a new user. It also displays the tabs for user to switch between different pages.</p>
+        <h4>Home page</h4>
+        <p>
+            Home page displays a carousel.
+        </p>
+        <h4>Timer page</h4>
+
+        <p>
+            Timer page provides user a way to track time spent on a project's task. User need to select a project
+            and a task first before start the timer. There is also a table displaying recent activities below the page.
+        </p>
+        <h4>Projects page</h4>
+
+        <p>
+            Projects page displays all information about projects. On this page, user can view the projects he/she
+            currently
+            involved in, all projects, and also can also create a new project. User can join/un-join a project. When
+            click the
+            "tasks page" button, user can see information related to the project, like brief introduction, currently
+            involved
+            users, all tasks. On this page, user can also create a new task, own/un-own a task, and view the statistics
+            of a
+            task.
+        </p>
+        <h4>Profile page</h4>
+        <p>
+            On profile page, user can modify his/her profile, including picure url and reset password.
+        </p>
+        <h4>Users page</h4>
+
+        <p>
+            Users page lists all users in this system. It displays all information related to each user, like picture,
+            user
+            name, full name, email, gender.
+        </p>
+    </div>
 </div>
+<div id="architecture">
+    <div class="row">
+        <h2 class="styled">System Architecture</h2>
 
+        <p>
+            I used MEAN stack for this website, with frontend being <code>HTML/CSS/AngularJS</code>, backend as
+            <code>Node.JS/Express/Mongoose</code>,
+            and <code>Mongo</code> database.
+        </p>
 
+        <p>
+            In frontend, I used <code>Bootstrap</code> to make the GUI responsive. AngularJS <code>$route</code> is used
+            to switch between different pages.
+            To communicate with backend server, a httpService is created as an interface to communicate through http
+            get/post.
+        </p>
+
+        <p>In backend, I used <code>Express</code> to start the web server and accepts different kinds of endpoints. It
+            uses json parser
+            to parse request, <code>passport</code> to do local authentication. <code>Mongoose</code> is used to
+            manipulate Mongo database.</p>
+
+        <p>Finally, </code>Mongo</p> database serves as the database. Please see following section for detailed database
+        tables desgin.</p>
+        <h4>Database design</h4>
+
+        <p>
+            The database is consisted with 4 tables: user, project, task and record.
+        </p>
+        <img src="../../public/img/design.jpeg" class="diagram">
+    </div>
+</div>
+<div id="api">
+    <div class="row">
+        <h2 class="styled">API</h2>
+
+        <p>The website exposes <code>JSON</code> API for accessing the data. See following table:</p>
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>PATH</th>
+                <th>PARAM</th>
+                <th>BODY</th>
+                <th>METHOD</th>
+                <th>RESP</th>
+                <th>AUTH?</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>/project/userAccount/login</td>
+                <td>username, password</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>user</td>
+                <td>No</td>
+            </tr>
+
+            <tr>
+                <td>/project/userAccount/logout</td>
+                <td>None</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>200</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/userAccount/loggedin</td>
+                <td>None</td>
+                <td>None</td>
+                <td>GET</td>
+                <td>user</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td>/project/userAccount/register</td>
+                <td>username, password</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>user</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td>/project/userAccount/update</td>
+                <td>None</td>
+                <td>User (JSON)</td>
+                <td>POST</td>
+                <td>user</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/users</td>
+                <td>None</td>
+                <td>None</td>
+                <td>GET</td>
+                <td>[User] (JSON)</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td>/project/projects</td>
+                <td>None</td>
+                <td>None</td>
+                <td>GET</td>
+                <td>[Project] (JSON)</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td>/project/projects/add</td>
+                <td>None</td>
+                <td>Project (JSON)</td>
+                <td>POST</td>
+                <td>project</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/projects/drop</td>
+                <td>projectid</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>project</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/projects/join</td>
+                <td>projectid</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>project</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/tasks</td>
+                <td>projectid</td>
+                <td>None</td>
+                <td>GET</td>
+                <td>task list</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td>/project/tasks/add</td>
+                <td>None</td>
+                <td>Task (JSON)</td>
+                <td>POST</td>
+                <td>task</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/tasks/own</td>
+                <td>taskid</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>task</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/tasks/drop</td>
+                <td>taskid</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>task</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/tasks/complete</td>
+                <td>taskid</td>
+                <td>None</td>
+                <td>POST</td>
+                <td>task</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>/project/tasks/addRecord</td>
+                None
+                <td></td>
+                <td>Record (JSON)</td>
+                <td>POST</td>
+                <td>task</td>
+                <td>YES</td>
+            </tr>
+            <tr>
+                <td>/project/tasks/tags</td>
+                <td>None</td>
+                <td>None</td>
+                <td>GET</td>
+                <td>[Tag] (JSON)</td>
+                <td>Yes</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="walkthrough">
+    <div class="row">
+        <h2 class="styled">Walk Through</h2>
+
+        <p>
+            Following graphs walks new user through the website. It shows how to register, manage project/task, track
+            time and view statistics.
+        </p>
+
+        <p>Register as a new user: </p>
+        <img src="../../public/img/step2.png" class="diagram-small">
+
+        <p>Timer page currently has no project to track:</p>
+        <img src="../../public/img/step3-timer.png" class="diagram-small">
+
+        <p>Go to project page to add and then join project:</p>
+
+        <img src="../../public/img/step4-project.png" class="diagram-small">
+        <br/>
+        <img src="../../public/img/step5-project.png" class="diagram-small">
+        <br/>
+        <img src="../../public/img/step6-project.png" class="diagram-small">
+
+        <p>Click joined project's "tasks page" button:</p>
+        <img src="../../public/img/step7-task.png" class="diagram-small">
+
+        <p>On tasks page, add/own task:</p>
+
+        <img src="../../public/img/step8-task.png" class="diagram-small">
+        <br/>
+        <img src="../../public/img/step9-task.png" class="diagram-small">
+        <br/>
+        <img src="../../public/img/step10-task.png" class="diagram-small">
+
+        <p>Finally, start track time on timer page: </p>
+        <img src="../../public/img/step11-timer.png" class="diagram-small">
+
+        <p>Modify profile on profile page</p>
+        <img src="../../public/img/step14-profile.png" class="diagram-small">
+    </div>
+</div>
+<div id="source">
+    <h2 class="styled">Thanks!</h2>
+    <p>I enjoyed this class very much, because I learned a lot about how to build a website using MEAN or ASP.NET
+        frameworks. The course is very helpful and easy to understand. The technologies taught in the class
+        keep update with what used in industry, thus I think will be good for future career development. </p>
+    <p>So I would like to thank Professor Jose for guiding me through the class and giving advices on this project.</p>
+
+    <p>Visit github repository: <a href="https://github.com/hhwangcocora/cs5610-webdev-openshift" target="_blank">Web-openshift</a>
+    </p>
+</div>
+<div id="references">
+    <h2 class="styled">References</h2>
+
+    <p><a href="http://www.w3schools.com/" target="_blank">W3C School</a></p>
+
+    <p><a href="https://angularjs.org/" target="_blank">AngularJS</a></p>
+
+    <p><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></p>
+
+    <p><a href="http://expressjs.com/" target="_blank">Express.JS</a></p>
+
+    <p><a href="http://passportjs.org/" target="_blank">Passport</a></p>
+
+    <p><a href="http://mongoosejs.com/" target="_blank">Mongoose</a></p>
+
+    <p><a href="https://www.mongodb.org/" target="_blank">Mongo</a></p>
+</div>
+<div class="margin-bottom"></div>
 </body>
 </html>

@@ -2,7 +2,8 @@
 
     <!-- Level 1 category -->
     <div class="row">
-        <div class="content-padding-10px">
+        <div class="content-padding-10px" ng-hide="tags.length == 0">
+            <p class="text-info" ng-hide="activatedTag">Select a project:</p>
             <div class="col-sm-10, task-tag-list">
 
                 <ul>
@@ -17,14 +18,15 @@
             </div>
         </div>
         <div ng-show="tags.length == 0" class="text-danger">
-            No working project. Please sign in and join projects in projects page!
+            No working project. Please sign in and join projects in <a href="#/projects">projects</a> page!
         </div>
     </div>
 
     <!-- Level 2 category  -->
     <div class="row">
-        <div class="content-padding-10px">
-            <div class="col-sm-10 task-tag-list" ng-show="activatedTag">
+        <div class="content-padding-10px"  ng-show="activatedTag">
+            <p class="text-info" ng-hide="activatedSubTag">Select a task: </p>
+            <div class="col-sm-10 task-tag-list">
 
                 <ul>
                     <li ng-repeat="subTag in activatedTag.subTags" class="timer-tag show-animation" >
@@ -39,7 +41,7 @@
 
         </div>
         <div ng-show="activatedTag && activatedTag.subTags.length == 0" class="text-danger">
-            No owned tasks. Go to project's tasks page to own tasks!
+            No owned tasks. Go to <a href="#/projects">projects</a>->tasks page to own tasks!
         </div>
     </div>
 
@@ -59,7 +61,8 @@
     </div>
 
     <!-- Recent finished tasks -->
-    <h3>Recent activities <small></small></h3>
+    <h3>Recent activities </h3>
+    <p class="text-info">Go to <a href="#/projects">projects</a>->tasks->stats to view all statistics about this task!</p>
     <div class="row">
         <table class="table table-hover table-striped">
             <thead>

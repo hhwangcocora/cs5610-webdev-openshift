@@ -28,7 +28,7 @@
                     <th>User Name</th>
                     <th>Full Name</th>
                     <th>Email</th>
-                    <th>Gender</th>
+                    <th class="conditional-display-600">Gender</th>
 
                 </tr>
                 </thead>
@@ -36,8 +36,8 @@
                     <td><img class="small-icon" ng-src="{{usersCtrl.getDisplayPic(id)}}"></td>
                     <td>{{allUsers[id].username}}</td>
                     <td>{{allUsers[id].firstName}} {{allUsers[id].lastName}}</td>
-                    <td>{{allUsers[id].email}}</td>
-                    <td>{{allUsers[id].gender}}</td>
+                    <td style="width:50px">{{allUsers[id].email}}</td>
+                    <td  class="conditional-display-600">{{allUsers[id].gender}}</td>
 
                 </tr>
 

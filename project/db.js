@@ -92,7 +92,6 @@ var saveMeta = function() {
                 meta.taskIdCounter = taskIdCounter
                 meta.save()
 
-
     })
 }
 
@@ -329,11 +328,24 @@ var dropProject = function(projectid, userid, successHandler, errorHandler) {
                     user.contributedProjects.splice(idx2, 1)
                     user.save()
                 }
+                // owner
+                Task.find({owner: userid, project: projectid}, function(err, tasks) {
+                    if (tasks) {
+
+                        tasks.forEach(function(task) {
+                            task.owner = ''
+                            task.save()
+                        })
+                    }
+                    successHandler(project)
+                })
             }, function(err) {
-                //errorHandler(err)
+                errorHandler(err)
             })
+        } else {
+            successHandler(project)
         }
-        successHandler(project)
+
     }, function(err) {
         errorHandler(err)
     })
